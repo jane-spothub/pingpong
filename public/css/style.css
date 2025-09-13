@@ -65,6 +65,7 @@ html, body {
 
 .loader-content img {
     max-width: 150px;
+
     margin-bottom: 20px;
 }
 
@@ -100,7 +101,7 @@ html, body {
     flex-direction: column;
     /*width: 100%;*/
     /*align-items:center;*/
-    /*justify-content:center;*/
+    justify-content:center;
     background: linear-gradient(#f7fbff, #345f79);
     height: 100vh;
 }
@@ -117,9 +118,10 @@ html, body {
 }
 
 .home-header img {
-    max-width: 100%;
-    height: 100vh;
-    /*object-fit: cover;*/
+    width: 100%;
+    /*max-width: 100%;*/
+    /*height: 100vh;*/
+    object-fit: contain;
     /*display: block;*/
 }
 
@@ -129,7 +131,7 @@ html, body {
     justify-content: center;
     align-items: center;
     position: absolute;
-    top:36%;
+    top:25%;
     width: 100%;
     background: var(--card);
     border-radius: 20px;
