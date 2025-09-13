@@ -201,7 +201,11 @@ html, body {
 #gameCanvas {
     display: block;
     width: 100%;
-    height: 100vh
+    height: 100vh;
+    touch-action: none;   /* prevent scroll/pinch gestures */
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #ui-top {

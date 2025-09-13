@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let width = 0,
         height = 0;
+
     function resize() {
         const dpr = window.devicePixelRatio || 1;
         width = window.innerWidth;
@@ -20,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         canvas.height = Math.round(height * dpr);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
+
     window.addEventListener("resize", resize);
     resize();
 
@@ -32,10 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const topInset = Math.min(height * 0.08, 90);
         const bottomInset = Math.min(height * 0.12, 150);
         return {
-            lt: { x: width * 0.12, y: topInset },
-            rt: { x: width * 0.88, y: topInset + 6 },
-            rb: { x: width * 0.94, y: height * 0.94 },
-            lb: { x: width * 0.06, y: height * 0.78 },
+            lt: {x: width * 0.12, y: topInset},
+            rt: {x: width * 0.88, y: topInset + 6},
+            rb: {x: width * 0.94, y: height * 0.94},
+            lb: {x: width * 0.06, y: height * 0.78},
         };
     }
 
@@ -52,10 +54,29 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
+    canvas.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        pointerDown = true;
+        const touch = e.touches[0];
+        player.u = lastPointerU = pointerToU(touch.clientX);
+    });
+
+    canvas.addEventListener("touchmove", (e) => {
+        e.preventDefault();
+        if (!pointerDown) return;
+        const touch = e.touches[0];
+        const u = pointerToU(touch.clientX);
+        spinBoost = (u - lastPointerU) * 0.075;
+        lastPointerU = u;
+        player.u = u;
+    });
+
+    canvas.addEventListener("touchend", () => (pointerDown = false));
+
     // === Game State ===
-    const player = { u: 0.5, v: 0.82, w: 0.25 };
-    const bot = { u: 0.5, v: 0.08, w: 0.25 };
-    const ball = { u: 0.5, v: 0.5, vu: 0.004, vv: 0.004, radius: 0.02 };
+    const player = {u: 0.5, v: 0.82, w: 0.25};
+    const bot = {u: 0.5, v: 0.08, w: 0.25};
+    const ball = {u: 0.5, v: 0.5, vu: 0.004, vv: 0.004, radius: 0.02};
 
     let playerScore = 0,
         botScore = 0;
@@ -171,9 +192,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ball.vu = (Math.random() - 0.5) * 0.0008;
         ball.vv = to === "player" ? -0.0009 : 0.0009;
     }
-
-
-
 
 
     function showWin(winner) {
