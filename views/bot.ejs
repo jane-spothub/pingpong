@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ping Pong - Bot</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="game-body">
+<div id="ui-top">
+    <button id="btn-back" class="small-btn">Back</button>
+    <div id="score">You: 0 &nbsp; — &nbsp; Bot: 0</div>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<div id="overlay">
+    <div class="overlay-card">
+        <h2>Play vs Bot</h2>
+        <p>Use mouse or touch to move your racket horizontally. Tap/drag for spin.</p>
+        <button id="startBtn" class="btn big">Start Game</button>
+    </div>
+</div>
+
+<script src="/js/game.js"></script>
+</body>
+</html>

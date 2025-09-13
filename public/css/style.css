@@ -1,0 +1,344 @@
+:root {
+    --bg: #e8f4fb;
+    --card: #ffffff;
+    --accent: #f28c5c;
+    --blue: #2787d1;
+}
+
+* {
+    box-sizing: border-box
+}
+
+html, body {
+    /*height: 100%;*/
+    width: 100%;
+    margin: 0;
+    font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif
+}
+
+/* Loader full-screen */
+#loader {
+    position: fixed;
+    inset: 0;
+    /*background: url("/assets/img/pingpong-poster.png") no-repeat center center;*/
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.8s ease;
+}
+
+/* Fade-out effect */
+#loader.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Loader content */
+/* Loader full-screen */
+#loader {
+    position: fixed;
+    inset: 0;
+    background: #2c2c2c;
+    /*background: url("/assets/img/pingpong-poster.png") no-repeat center center;*/
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.8s ease;
+}
+
+/* Fade-out effect */
+#loader.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Loader content */
+.loader-content {
+    text-align: center;
+    color: white;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+.loader-content img {
+    max-width: 150px;
+    margin-bottom: 20px;
+}
+
+/* Progress bar container */
+.progress-container {
+    width: 250px;
+    height: 12px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 auto 10px;
+}
+
+/* Progress bar fill */
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ffcc00, #ff6600);
+    transition: width 0.2s ease;
+}
+
+/* Progress text */
+#progress-text {
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+
+
+/*main content*/
+.home-body {
+    display: flex;
+    flex-direction: column;
+    /*width: 100%;*/
+    /*align-items:center;*/
+    /*justify-content:center;*/
+    background: linear-gradient(#f7fbff, #345f79);
+    height: 100vh;
+}
+
+.home-header {
+    width: 100%;
+    /*background: #000; !* fallback if image fails *!*/
+    text-align: center;
+    /*position: relative;*/
+    /*z-index: 1;*/
+    position: absolute;
+    inset:0;
+    z-index: 1;
+}
+
+.home-header img {
+    max-width: 100%;
+    height: 100vh;
+    /*object-fit: cover;*/
+    /*display: block;*/
+}
+
+.home-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top:36%;
+    width: 100%;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 28px 24px;
+    box-shadow: 0 12px 30px rgba(6, 25, 45, 0.12);
+    text-align: center;
+    z-index: 2;           /* ensure it's above the header */
+}
+
+.title {
+    font-size: 36px;
+    margin: 4px 0 6px;
+    letter-spacing: 2px;
+    color: #2c2c2c;
+    text-shadow: 0 3px 0 rgba(0, 0, 0, 0.06)
+}
+
+.instructions {
+    color: #475467;
+    font-weight: 600;
+    margin: 8px 0 22px
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: none;
+    text-decoration: none;
+    color: white;
+    font-weight: 800;
+    cursor: pointer
+}
+
+.how-to {
+    background: #667085;
+    margin-bottom: 14px
+}
+
+.big {
+    display: block;
+    background: var(--blue);
+    margin: 10px 0;
+    padding: 16px;
+    border-radius: 18px;
+    font-size: 18px
+}
+
+.back {
+    background: var(--accent);
+    margin-top: 10px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    display: inline-block
+}
+
+/* Game page styles */
+.game-body {
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    background: linear-gradient(#05305a, #0b5aa8 60%);
+    display: block;
+    position: relative
+}
+
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100vh
+}
+
+#ui-top {
+    position: absolute;
+    z-index: 30;
+    left: 12px;
+    top: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: center
+}
+
+.small-btn {
+    background: #ffffffaa;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer
+}
+
+#score {
+    color: white;
+    font-weight: 700;
+    font-size: 18px
+}
+
+/* Overlay */
+#overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(rgba(5, 20, 40, 0.55), rgba(5, 20, 40, 0.55));
+    z-index: 50;
+}
+
+.overlay-card {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    width: 320px;
+    text-align: center
+}
+
+.overlay-card h2 {
+    margin: 0 0 8px
+}
+
+.overlay-card p {
+    color: #4b5563;
+    font-size: 14px
+}
+
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    /*display: flex;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
+    /*height: 100vh;*/
+    /*padding: 10px;*/
+
+    /* Background with fallback */
+    /*background-color: #2e4b62;*/
+}
+
+
+.game-container {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    /*width: 320px;*/
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.instructions {
+    font-size: 14px;
+    color: #555;
+    margin: 15px 0;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.how-to {
+    background: #4CAF50;
+    color: #fff;
+    max-width: 320px;
+    min-width: 220px;
+    width: 100%;
+
+
+}
+
+.play-friend {
+    background: #2196F3;
+    color: #fff;
+    max-width: 520px;
+    min-width: 320px;
+    width: 100%;
+
+
+}
+
+.play-bot {
+    background: #0D6EFD;
+    color: #fff;
+    max-width: 520px;
+    min-width: 320px;
+    width: 100%;
+}
+
+.back {
+    background: #bf00ff;
+    color: #fff;
+    max-width: 520px;
+    min-width: 320px;
+    width: 100%;
+}

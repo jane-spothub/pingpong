@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ping Pong - Home</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="home-body" >
+
+<!-- 🔹 Loader -->
+<div id="loader">
+    <div class="loader-content">
+        <img src="/assets/img/pingpong-poster.png" alt="Loading Logo">
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p id="progress-text">Loading 0%</p>
+    </div>
+</div>
+
+<!-- 🔹 Main content -->
+<div  id="main-content" style="display:none;">
+    <header class="home-header">
+        <img src="/assets/img/pingpong-poster.png" alt="Ping Pong Poster">
+    </header>
+
+    <div class="home-card">
+        <h1 class="title">PING PONG</h1>
+        <p class="instructions">Use your finger (or mouse) to move the racket and spin the ball. Get 7 points to win!</p>
+
+        <button class="btn how-to">▶ HOW TO PLAY</button>
+
+        <div class="big-buttons">
+            <a href="#" onclick="alert('Play vs friend not implemented here'); return false;" class="btn big">
+                <span class="icon">👤</span> PLAY VS. FRIEND
+            </a>
+
+            <a href="/bot" class="btn big">
+                <span class="icon">🤖</span> PLAY VS. BOT
+            </a>
+        </div>
+
+        <a href="#" class="btn back">Back</a>
+    </div>
+</div>
+
+<script>
+    // Simulate progress bar loading
+    document.addEventListener("DOMContentLoaded", () => {
+        const progressBar = document.getElementById("progress-bar");
+        const progressText = document.getElementById("progress-text");
+        const loader = document.getElementById("loader");
+        const mainContent = document.getElementById("main-content");
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 2; // increment speed
+            progressBar.style.width = progress + "%";
+            progressText.textContent = "Loading " + progress + "%";
+
+            if (progress >= 100) {
+                clearInterval(interval);
+                loader.classList.add("fade-out");
+                setTimeout(() => {
+                    loader.style.display = "none";
+                    mainContent.style.display = "block";
+                }, 800);
+            }
+        }, 50); // update every 50ms
+    });
+</script>
+
+</body>
+</html>
