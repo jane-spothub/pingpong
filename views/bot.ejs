@@ -14,13 +14,31 @@
 
 <canvas id="gameCanvas"></canvas>
 
+<!--<div id="overlay">-->
+<!--    <div class="overlay-card">-->
+<!--        <h2>Play vs Bot</h2>-->
+<!--        <p>Use mouse or touch to move your racket horizontally. Tap/drag for spin.</p>-->
+<!--        <button id="startBtn" class="btn big">Start Game</button>-->
+<!--    </div>-->
+<!--</div>-->
 <div id="overlay">
     <div class="overlay-card">
-        <h2>Play vs Bot</h2>
-        <p>Use mouse or touch to move your racket horizontally. Tap/drag for spin.</p>
-        <button id="startBtn" class="btn big">Start Game</button>
+        <h2>Select Difficulty</h2>
+        <p>Choose how tough the bot should be.</p>
+        <div class="level-select">
+            <div class="level-btn-container">
+                <button class="btn level-btn" data-level="easy">Easy</button>
+                <button class="btn level-btn" data-level="medium">Medium</button>
+                <button class="btn level-btn" data-level="hard">Hard</button>
+            </div>
+            <button id="btn-exit" class="small-btn">Exit</button>
+
+
+        </div>
+        <button id="startBtn" class="btn big" style="display:none;">Start Game</button>
     </div>
 </div>
+
 
 <script src="/js/game.js"></script>
 </body>
