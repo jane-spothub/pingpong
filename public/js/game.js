@@ -1,4 +1,5 @@
-import { SoundHandler } from "./soundHandler.js";
+import {SoundHandler} from "./soundHandler.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
@@ -13,8 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // const roundWon = document.getElementById("round-won");
     let botSpeed = 0.00025; // default
     btnMute.textContent = "🔊";
-    let width = 0,
-        height = 0;
+    let width = 800,
+        height = 800;
     // const levelButtons = document.querySelectorAll(".level-btn");
 
     const playerImg = new Image();
@@ -23,12 +24,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const botImg = new Image();
     botImg.src = "assets/img/bot-paddle.png"; // fixed typo
     let imagesLoaded = 0;
+
     function showOverlay() {
         overlay.classList.add("active");
     }
+
     function hideOverlay() {
         overlay.classList.remove("active");
     }
+
     document.addEventListener("DOMContentLoaded", () => {
         showOverlay(); // show the difficulty overlay immediately
     });
@@ -56,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-
     let difficulty = window.difficulty || "easy";
 
     // levelButtons.forEach(btn => {
@@ -79,11 +82,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const dpr = window.devicePixelRatio || 1;
         width = window.innerWidth;
         height = window.innerHeight;
-        canvas.style.width = width + "px";
-        canvas.style.height = height + "px";
 
-        canvas.width = Math.round(width * dpr);
-        canvas.height = Math.round(height * dpr);
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
@@ -100,12 +105,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const w = width;
         const h = height;
 
-        const topScale = 0.6; // smaller = stronger perspective
-        const tableHeight = h * 0.8;
+        const topScale = 1.0;          // perspective
+        const tableHeight = h * 0.65;  // % of screen height
         const tableWidthBottom = w * 0.9;
         const tableWidthTop = tableWidthBottom * topScale;
 
-        const bottomY = h * 0.9;
+        const bottomY = h * 0.88;
         const topY = bottomY - tableHeight;
 
         return {
@@ -115,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
             lb: {x: (w - tableWidthBottom) / 2, y: bottomY}, // left bottom
         };
     }
+
 
     function worldToScreen(u, v) {
         const c = tableCorners();
@@ -128,16 +134,28 @@ document.addEventListener("DOMContentLoaded", () => {
             scale: lerp(0.6, 1.0, v), // perspective scale
         };
     }
+
     // === Game State ===
-    const player = {u: 0.5, v: 0.82, w: 0.25};
-    const bot = {u: 0.5, v: 0.08, w: 0.25};
+    // const player = {u: 0.5, v: 0.82, w: 0.25};
+    // const bot = {u: 0.5, v: 0.08, w: 0.25};
+    const player = {u: 0.5, v: 0.83, w: 0.25}; // below bottom edge
+    const bot = {u: 0.5, v: -0.02, w: 0.25}; // above top edge
+
     // const ball = {u: 0.5, v: 0.5, vu: 0.004, vv: 0.004, radius: 0.04};
+    // const ball = {
+    //     u: 0.5, v: 0.5,       // position on table (2D)
+    //     vu: 0.004, vv: 0.004, // velocity along table
+    //     z: 0.05, vz: 0,       // height above table, vertical velocity
+    //     radius: 0.03
+    // };
+
     const ball = {
-        u: 0.5, v: 0.5,       // position on table (2D)
-        vu: 0.004, vv: 0.004, // velocity along table
-        z: 0.05, vz: 0,       // height above table, vertical velocity
+        u: 0.5, v: 0.5,
+        vu: 0.004, vv: 0.004,
+        z: 0, vz: 0,       // height above table, vertical velocity
         radius: 0.03
     };
+
 
     let playerScore = 0,
         botScore = 0;
@@ -158,46 +176,63 @@ document.addEventListener("DOMContentLoaded", () => {
     function drawTable() {
         ctx.save();
 
-        const w = canvas.width;
-        const h = canvas.height;
+        const w = width;
+        const h = height;
 
-        const topScale = 0.6;
-        const tableHeight = h * 0.8;
-        const tableWidthBottom = w * 0.9;
-        const tableWidthTop = tableWidthBottom * topScale;
+        // const topScale = 0.6;
+        const tableHeight = h * 0.65;
+        const tableWidth = w * 0.9;
+        // const tableWidthTop = tableWidthBottom * topScale;
 
-        const bottomY = h * 0.9;
-        const topY = bottomY - tableHeight;
+        // const bottomY = h * 0.88;
+        // const topY = bottomY - tableHeight;
+        const topY = (h - tableHeight) / 2;
+        const bottomY = topY + tableHeight;
 
-        const leftBottom = {x: (w - tableWidthBottom) / 2, y: bottomY};
-        const rightBottom = {x: (w + tableWidthBottom) / 2, y: bottomY};
+        const left = (w - tableWidth) / 2;
+        const right = left + tableWidth;
 
-        const leftTop = {x: (w - tableWidthTop) / 2, y: topY};
-        const rightTop = {x: (w + tableWidthTop) / 2, y: topY};
+        const leftTop = {x: left, y: topY};
+        const rightTop = {x: right, y: topY};
+        const leftBottom = {x: left, y: bottomY};
+        const rightBottom = {x: right, y: bottomY};
 
-        // === SHADOW ===
-        ctx.beginPath();
-        ctx.moveTo(leftBottom.x, leftBottom.y);
-        ctx.lineTo(rightBottom.x, rightBottom.y);
-        ctx.lineTo(rightBottom.x, rightBottom.y + 80); // extend downward
-        ctx.lineTo(leftBottom.x, leftBottom.y + 80);
-        ctx.closePath();
 
-        const shadowGrad = ctx.createLinearGradient(
-            0,
-            bottomY,
-            0,
-            bottomY + 80
-        );
-        shadowGrad.addColorStop(0, "rgba(0,0,0,0.35)");
-        shadowGrad.addColorStop(1, "rgba(0,0,0,0)");
-        ctx.fillStyle = shadowGrad;
-        ctx.fill();
+        // === Shadow around the table ===
+        ctx.save();
+        ctx.shadowColor = "rgba(0,0,0,0.5)";
+        ctx.shadowBlur = 30;       // softness of shadow
+        ctx.shadowOffsetX = 0;     // equal all sides
+        ctx.shadowOffsetY = 0;
 
-        // === TABLE TOP ===
+        // draw a filled path just to "drop" the shadow
+        // ctx.fillStyle = "#75c93f"; // same color as table (placeholder)
+        // ctx.beginPath();
+        // ctx.moveTo(leftTop.x, leftTop.y);
+        // ctx.lineTo(rightTop.x, rightTop.y);
+        // ctx.lineTo(rightBottom.x, rightBottom.y);
+        // ctx.lineTo(leftBottom.x, leftBottom.y);
+        // ctx.closePath();
+        // ctx.fill();
+        // ctx.restore();
+        // === shadow ===
+        // ctx.beginPath();
+        // ctx.moveTo(leftBottom.x, leftBottom.y);
+        // ctx.lineTo(rightBottom.x, rightBottom.y);
+        // ctx.lineTo(rightBottom.x, rightBottom.y + 80);
+        // ctx.lineTo(leftBottom.x, leftBottom.y + 80);
+        // ctx.closePath();
+        //
+        // const shadowGrad = ctx.createLinearGradient(0, bottomY, 0, bottomY + 80);
+        // shadowGrad.addColorStop(0, "rgba(0,0,0,0.35)");
+        // shadowGrad.addColorStop(1, "rgba(0,0,0,0)");
+        // ctx.fillStyle = shadowGrad;
+        // ctx.fill();
+
+        // === table top ===
         const grd = ctx.createLinearGradient(leftTop.x, topY, leftBottom.x, bottomY);
-        grd.addColorStop(0, "#0f9b5e");
-        grd.addColorStop(1, "#07c77f");
+        grd.addColorStop(0, "#75c93f");
+        grd.addColorStop(1, "#75c93f");
 
         ctx.fillStyle = grd;
         ctx.beginPath();
@@ -209,12 +244,12 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fill();
 
         // outline
-        ctx.lineWidth = 8;
-        ctx.strokeStyle = "#eafaf1";
+        ctx.lineWidth = 12;
+        ctx.strokeStyle = "#000000";
         ctx.stroke();
 
         // midline
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 8;
         ctx.strokeStyle = "rgba(255,255,255,0.9)";
         const midTopX = (leftTop.x + rightTop.x) / 2;
         const midBottomX = (leftBottom.x + rightBottom.x) / 2;
@@ -227,21 +262,70 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function drawNet() {
-        const steps = 60;
         ctx.save();
-        ctx.strokeStyle = "rgba(255,255,255,0.8)";
-        ctx.lineWidth = 2;
-        for (let i = 0; i <= steps; i++) {
-            const u = i / steps;
-            const top = worldToScreen(u, 0.48);
-            const bottom = worldToScreen(u, 0.52);
-            ctx.beginPath();
-            ctx.moveTo(top.x, top.y);
-            ctx.lineTo(bottom.x, bottom.y);
-            ctx.stroke();
-        }
+
+        const w = width;
+        const h = height;
+
+        const tableHeight = h * 0.65;
+        const tableWidth = w * 0.9;
+
+        const topY = (h - tableHeight) / 2;
+        const bottomY = topY + tableHeight;
+        const left = (w - tableWidth) / 2;
+        const right = left + tableWidth;
+
+        // Middle Y (center of the table)
+        const midY = (topY + bottomY) / 2;
+
+        const netThickness = 8;   // thickness of the white part
+        const borderThickness = 2; // thickness of black borders
+
+        // --- Draw white net (center band) ---
+        ctx.beginPath();
+        ctx.moveTo(left, midY);
+        ctx.lineTo(right, midY);
+        ctx.lineWidth = netThickness;
+        ctx.strokeStyle = "white";
+        ctx.stroke();
+
+        // --- Draw black top border ---
+        ctx.beginPath();
+        ctx.moveTo(left, midY - netThickness / 2);
+        ctx.lineTo(right, midY - netThickness / 2);
+        ctx.lineWidth = borderThickness;
+        ctx.strokeStyle = "black";
+        ctx.stroke();
+
+        // --- Draw black bottom border ---
+        ctx.beginPath();
+        ctx.moveTo(left, midY + netThickness / 2);
+        ctx.lineTo(right, midY + netThickness / 2);
+        ctx.lineWidth = borderThickness;
+        ctx.strokeStyle = "black";
+        ctx.stroke();
+
         ctx.restore();
     }
+
+
+    // function drawNet() {
+    //     const steps = 60;
+    //     ctx.save();
+    //     ctx.strokeStyle = "rgba(255,255,255,0.8)";
+    //     ctx.lineWidth = 2;
+    //     for (let i = 0; i <= steps; i++) {
+    //         const u = i / steps;
+    //         const top = worldToScreen(u, 0.48);
+    //         const bottom = worldToScreen(u, 0.52);
+    //         ctx.beginPath();
+    //         ctx.moveTo(top.x, top.y);
+    //         ctx.lineTo(bottom.x, bottom.y);
+    //         ctx.stroke();
+    //     }
+    //     ctx.restore();
+    // }
+
     function updateBall(dt) {
         // move in table plane
         ball.u += ball.vu * dt;
@@ -304,35 +388,112 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.restore();
     }
 
-
-    function drawPaddle(target, isBot = false) {
-        if (!(isBot ? botImg.complete : playerImg.complete)) {
-            console.warn("⏳ Paddle image not ready yet");
-            return;
-        }
-
-        const p = worldToScreen(target.u, target.v);
-        const scale = p.scale;
-
-        const baseSize = 100;
-        const w = baseSize * scale;
-        const h = baseSize * scale;
-
+    function drawPaddle(ctx, x, y, radius, color, isBot = false, useRound = false) {
         ctx.save();
 
-        // === shadow under paddle ===
+        // === Shadow (to the right side) ===
         ctx.beginPath();
-        ctx.ellipse(p.x, p.y + h * 0.35, w * 0.6, h * 0.25, 0, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0,0,0,0.35)";
+        ctx.arc(x + radius * 0.35, y + radius * 0.15, radius * 1.05, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
         ctx.filter = "blur(6px)";
         ctx.fill();
         ctx.filter = "none";
 
-        // === paddle image ===
-        ctx.drawImage(isBot ? botImg : playerImg, p.x - w / 2, p.y - h / 2, w, h);
+        if (useRound) {
+            // === ROUND PADDLE WITH HANDLE ===
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#000";
+            ctx.fillStyle = color;
+
+            // Paddle head (circle)
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // === Center line inside the circle ===
+            ctx.beginPath();
+            ctx.moveTo(x - radius * 0.6, y);  // left edge
+            ctx.lineTo(x + radius * 0.6, y);  // right edge
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "rgba(0,0,0,0.8)";
+            ctx.stroke();
+            // === Center line inside the circle ===
+            ctx.lineWidth = 3;
+
+// main line (dark)
+            ctx.beginPath();
+            ctx.moveTo(x - radius * 0.6, y);
+            ctx.lineTo(x + radius * 0.6, y);
+            ctx.strokeStyle = "rgba(0,0,0,0.8)";
+            ctx.stroke();
+
+// highlight above (lighter shadow)
+            ctx.beginPath();
+            ctx.moveTo(x - radius * 0.6, y - 2);
+            ctx.lineTo(x + radius * 0.6, y - 2);
+            ctx.strokeStyle = "rgba(0,0,0,0.6)";
+            ctx.stroke();
+
+// shadow below (darker shadow)
+            ctx.beginPath();
+            ctx.moveTo(x - radius * 0.6, y + 2);
+            ctx.lineTo(x + radius * 0.6, y + 2);
+            ctx.strokeStyle = "rgba(0,0,0,0.5)";
+            ctx.stroke();
+
+
+            // Handle
+            const handleWidth = radius * 0.4;
+            const handleHeight = radius * 0.9;
+            ctx.beginPath();
+            ctx.rect(
+                x - handleWidth / 2,
+                isBot ? y - radius - handleHeight : y + radius,
+                handleWidth,
+                handleHeight
+            );
+            ctx.fill();
+            ctx.stroke();
+        } else {
+            // === OLD STYLE (rectangular paddle) ===
+            ctx.fillStyle = color;
+            ctx.fillRect(x - radius / 2, y - radius / 2, radius, radius * 0.2);
+        }
 
         ctx.restore();
     }
+
+
+    // function drawPaddle(target, isBot = false) {
+    //     if (!(isBot ? botImg.complete : playerImg.complete)) {
+    //         console.warn("⏳ Paddle image not ready yet");
+    //         return;
+    //     }
+    //
+    //     const p = worldToScreen(target.u, target.v);
+    //     const scale = p.scale;
+    //
+    //     const baseSize = Math.min(width, height) * 0.12; // ~12% of screen
+    //     const w = baseSize * scale;
+    //     const h = baseSize * scale;
+    //
+    //
+    //     ctx.save();
+    //
+    //     // === shadow under paddle ===
+    //     ctx.beginPath();
+    //     ctx.ellipse(p.x, p.y + h * 0.35, w * 0.6, h * 0.25, 0, 0, Math.PI * 2);
+    //     ctx.fillStyle = "rgba(0,0,0,0.35)";
+    //     ctx.filter = "blur(6px)";
+    //     ctx.fill();
+    //     ctx.filter = "none";
+    //
+    //     // === paddle image ===
+    //     ctx.drawImage(isBot ? botImg : playerImg, p.x - w / 2, p.y - h / 2, w, h);
+    //
+    //     ctx.restore();
+    // }
 
 
     // function updateScore() {
@@ -415,16 +576,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // === Logic ===
     function resetBall(to = "player") {
-        ball.u = 0.5;
-        ball.v = 0.5;
+        // place ball near bot or player depending on who serves
+        if (to === "bot") {
+            ball.u = bot.u;
+            ball.v = bot.v + 0.06;  // just below bot paddle so it goes down
+        } else {
+            ball.u = player.u;
+            ball.v = player.v - 0.06; // just above player paddle so it goes up
+        }
 
         let speedFactor = 0.3; // default normal speed
-        if (difficulty === "medium") speedFactor = 0.6;   // 1× faster
-        if (difficulty === "hard") speedFactor = 0.7;     // 2× faster
+        if (difficulty === "medium") speedFactor = 0.6;
+        if (difficulty === "hard") speedFactor = 0.7;
 
+        // random horizontal push
         ball.vu = (Math.random() - 0.5) * 0.0008 * speedFactor;
-        ball.vv = (to === "player" ? -0.0009 : 0.0009) * speedFactor;
+        // vertical push depending on server
+        ball.vv = (to === "bot" ? 0.0009 : -0.0009) * speedFactor;
     }
+
 
 
     // function showWin(winner) {
@@ -564,23 +734,34 @@ document.addEventListener("DOMContentLoaded", () => {
         // draw
         ctx.clearRect(0, 0, width, height);
         const bg = ctx.createLinearGradient(0, 0, 0, height);
-        bg.addColorStop(0, "#082d4e");
-        bg.addColorStop(1, "#0f5f8a");
+        bg.addColorStop(0, "#eeb030");
+        bg.addColorStop(1, "#fcce70");
         ctx.fillStyle = bg;
         ctx.fillRect(0, 0, width, height);
 
         drawTable();
         drawNet();
 
+        // convert logical (u,v) → screen coords
+        const botScreen = worldToScreen(bot.u, bot.v);
+        const playerScreen = worldToScreen(player.u, player.v);
+
+// radius should scale with perspective
+        const baseRadius = Math.min(width, height) * 0.06; // tweak size
+        // const botRadius = baseRadius * botScreen.scale;
+        // const playerRadius = baseRadius * playerScreen.scale;
+        const botRadius = baseRadius;
+        const playerRadius = baseRadius;
         if (ball.v < player.v - 0.05) {
             drawBall();
-            drawPaddle(bot, true);
-            drawPaddle(player, false);
+            drawPaddle(ctx, botScreen.x, botScreen.y, botRadius, "#3498db", true, true);
+            drawPaddle(ctx, playerScreen.x, playerScreen.y, playerRadius, "#e74c3c", false, true);
         } else {
-            drawPaddle(bot, true);
+            drawPaddle(ctx, botScreen.x, botScreen.y, botRadius, "#3498db", true, true);
             drawBall();
-            drawPaddle(player, false);
+            drawPaddle(ctx, playerScreen.x, playerScreen.y, playerRadius, "#e74c3c", false, true);
         }
+
 
         requestAnimationFrame(loop);
     }
