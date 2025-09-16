@@ -1,43 +1,37 @@
-// public/js/game.js
+import { SoundHandler } from "./soundHandler.js";
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-
+    const soundHandler = new SoundHandler();
     const overlay = document.getElementById("overlay");
     const startBtn = document.getElementById("startBtn");
     const btnBack = document.getElementById("btn-back");
     const btnExit = document.getElementById("btn-exit");
+    const btnMute = document.getElementById("btn-mute");
     const scoreEl = document.getElementById("score");
+    const round = document.getElementById("round");
+    // const roundWon = document.getElementById("round-won");
     let botSpeed = 0.00025; // default
-
+    btnMute.textContent = "🔊";
     let width = 0,
         height = 0;
-    const levelButtons = document.querySelectorAll(".level-btn");
-// === Load paddle images ===
-//     const playerImg = new Image();
-//     playerImg.src = "/assets/img/player-paddle.png";  // adjust path
-//
-//     const botImg = new Image();
-//     botImg.src = "/assets/img/bot-paddle.png";        // adjust path
-//     let imagesLoaded = 0;
-    // function checkReady() {
-    //     imagesLoaded++;
-    //     if (imagesLoaded === 2) {
-    //         // both images ready, now safe to start
-    //         resetBall("bot");
-    //         updateScore();
-    //     }
-    // }
-    //
-    // playerImg.onload = checkReady;
-    // botImg.onload = checkReady;
-// === Load paddle images ===
+    // const levelButtons = document.querySelectorAll(".level-btn");
+
     const playerImg = new Image();
     playerImg.src = "assets/img/player-paddle.png";
 
     const botImg = new Image();
     botImg.src = "assets/img/bot-paddle.png"; // fixed typo
     let imagesLoaded = 0;
+    function showOverlay() {
+        overlay.classList.add("active");
+    }
+    function hideOverlay() {
+        overlay.classList.remove("active");
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+        showOverlay(); // show the difficulty overlay immediately
+    });
 
     [playerImg, botImg].forEach(img => {
         img.onload = () => {
@@ -52,22 +46,34 @@ document.addEventListener("DOMContentLoaded", () => {
         img.onerror = () => console.error("❌ Failed to load", img.src);
     });
 
-
-    levelButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-            const level = btn.dataset.level;
-
-            if (level === "easy") botSpeed = 0.00018;
-            if (level === "medium") botSpeed = 0.00025;
-            if (level === "hard") botSpeed = 0.00035;
-
-            // update UI to show start button
-            document.querySelector("h2").textContent = `Level: ${level.toUpperCase()}`;
-            document.querySelector("p").textContent = "Ready? Click Start to play.";
-            document.querySelector(".level-select").style.display = "none";
-            document.getElementById("startBtn").style.display = "inline-block";
-        });
+    btnMute.addEventListener("click", () => {
+        soundHandler.toggleMute();
+        btnMute.textContent = soundHandler.muted ? "🔇" : "🔊";
+        // for img
+        // btnMute.style.backgroundImage = soundHandler.muted
+        //     ? `url(${muteIcon})`
+        //     : `url(${unmuteIcon})`;
     });
+
+
+
+    let difficulty = window.difficulty || "easy";
+
+    // levelButtons.forEach(btn => {
+    //     btn.addEventListener("click", () => {
+    //         difficulty = btn.dataset.level;
+    //
+    //         if (difficulty === "easy") botSpeed = 0.00018;
+    //         if (difficulty === "medium") botSpeed = 0.00025;
+    //         if (difficulty === "hard") botSpeed = 0.00035;
+    //
+    //         document.querySelector("h2").textContent = `Level: ${difficulty.toUpperCase()}`;
+    //         document.querySelector("p").textContent = "Ready? Click Start to play.";
+    //         document.querySelector(".level-select").style.display = "none";
+    //         document.getElementById("startBtn").style.display = "inline-block";
+    //     });
+    // });
+
 
     function resize() {
         const dpr = window.devicePixelRatio || 1;
@@ -103,13 +109,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const topY = bottomY - tableHeight;
 
         return {
-            lt: { x: (w - tableWidthTop) / 2, y: topY },   // left top
-            rt: { x: (w + tableWidthTop) / 2, y: topY },   // right top
-            rb: { x: (w + tableWidthBottom) / 2, y: bottomY }, // right bottom
-            lb: { x: (w - tableWidthBottom) / 2, y: bottomY }, // left bottom
+            lt: {x: (w - tableWidthTop) / 2, y: topY},   // left top
+            rt: {x: (w + tableWidthTop) / 2, y: topY},   // right top
+            rb: {x: (w + tableWidthBottom) / 2, y: bottomY}, // right bottom
+            lb: {x: (w - tableWidthBottom) / 2, y: bottomY}, // left bottom
         };
     }
-
 
     function worldToScreen(u, v) {
         const c = tableCorners();
@@ -123,34 +128,25 @@ document.addEventListener("DOMContentLoaded", () => {
             scale: lerp(0.6, 1.0, v), // perspective scale
         };
     }
-
-    // canvas.addEventListener("touchstart", (e) => {
-    //     e.preventDefault();
-    //     pointerDown = true;
-    //     const touch = e.touches[0];
-    //     player.u = lastPointerU = pointerToU(touch.clientX);
-    // });
-
-    // canvas.addEventListener("touchmove", (e) => {
-    //     e.preventDefault();
-    //     if (!pointerDown) return;
-    //     const touch = e.touches[0];
-    //     const u = pointerToU(touch.clientX);
-    //     spinBoost = (u - lastPointerU) * 0.075;
-    //     lastPointerU = u;
-    //     player.u = u;
-    // });
-
-    // canvas.addEventListener("touchend", () => (pointerDown = false));
-
     // === Game State ===
     const player = {u: 0.5, v: 0.82, w: 0.25};
     const bot = {u: 0.5, v: 0.08, w: 0.25};
-    const ball = {u: 0.5, v: 0.5, vu: 0.004, vv: 0.004, radius: 0.04};
+    // const ball = {u: 0.5, v: 0.5, vu: 0.004, vv: 0.004, radius: 0.04};
+    const ball = {
+        u: 0.5, v: 0.5,       // position on table (2D)
+        vu: 0.004, vv: 0.004, // velocity along table
+        z: 0.05, vz: 0,       // height above table, vertical velocity
+        radius: 0.03
+    };
 
     let playerScore = 0,
         botScore = 0;
-    const winningScore = 7;
+    // const winningScore = 7;
+    const roundWinningScore = 3;  // score needed to win a round
+    let currentRound = 1;
+    let playerRoundsWon = 0;
+    let botRoundsWon = 0;
+    const totalRounds = 3;
 
     let running = false;
     let last = performance.now();
@@ -173,11 +169,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const bottomY = h * 0.9;
         const topY = bottomY - tableHeight;
 
-        const leftBottom = { x: (w - tableWidthBottom) / 2, y: bottomY };
-        const rightBottom = { x: (w + tableWidthBottom) / 2, y: bottomY };
+        const leftBottom = {x: (w - tableWidthBottom) / 2, y: bottomY};
+        const rightBottom = {x: (w + tableWidthBottom) / 2, y: bottomY};
 
-        const leftTop = { x: (w - tableWidthTop) / 2, y: topY };
-        const rightTop = { x: (w + tableWidthTop) / 2, y: topY };
+        const leftTop = {x: (w - tableWidthTop) / 2, y: topY};
+        const rightTop = {x: (w + tableWidthTop) / 2, y: topY};
 
         // === SHADOW ===
         ctx.beginPath();
@@ -230,8 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.restore();
     }
 
-
-
     function drawNet() {
         const steps = 60;
         ctx.save();
@@ -248,30 +242,56 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         ctx.restore();
     }
+    function updateBall(dt) {
+        // move in table plane
+        ball.u += ball.vu * dt;
+        ball.v += ball.vv * dt;
+
+        // apply gravity
+        ball.vz += gravity * dt;
+        ball.z += ball.vz * dt;
+
+        // bounce off table
+        if (ball.z <= 0) {
+            ball.z = 0;
+            ball.vz *= -bounceFactor;
+            soundHandler.play("hitTable");
+        }
+
+        // bounce off side walls
+        if (ball.u < 0 || ball.u > 1) {
+            ball.vu *= -1;
+
+            soundHandler.play("hitTable");
+
+        }
+    }
+
+    // physics constants
+    const gravity = -0.00005; // pull ball down
+    const bounceFactor = 0.7; // how much energy is kept after bounce
 
     function drawBall() {
         const p = worldToScreen(ball.u, ball.v);
         const r = ball.radius * Math.min(width, height) * p.scale;
 
-        // small lift above the table
-        const lift = r * 0.6;
-
         ctx.save();
 
-        // === shadow (ellipse under ball) ===
+        // shadow
+        const shadowScale = 1 - Math.min(0.8, ball.z * 4);
         ctx.beginPath();
-        ctx.ellipse(p.x, p.y + r + 5, r * 1.3, r * 0.5, 0, 0, Math.PI * 2);
+        ctx.ellipse(p.x, p.y + r + 5, r * 1.3 * shadowScale, r * 0.5 * shadowScale, 0, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(0,0,0,0.35)";
         ctx.filter = "blur(4px)";
         ctx.fill();
         ctx.filter = "none";
 
-        // === ball ===
+        // ball body (lifted by z height)
         ctx.beginPath();
-        ctx.arc(p.x, p.y - lift, r, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y - ball.z * 300, r, 0, Math.PI * 2);
         const grad = ctx.createRadialGradient(
-            p.x - r / 3, p.y - lift - r / 3, r * 0.2,
-            p.x, p.y - lift, r
+            p.x - r / 3, p.y - ball.z * 300 - r / 3, r * 0.2,
+            p.x, p.y - ball.z * 300, r
         );
         grad.addColorStop(0, "#fff");
         grad.addColorStop(1, "#ccc");
@@ -285,36 +305,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-
-    // function drawPaddle(target, color, isBot) {
-    //     const p = worldToScreen(target.u, target.v);
-    //     const scale = p.scale;
-    //     const radius = 28 * scale;
-    //     const handleLen = 40 * scale;
-    //
-    //     ctx.save();
-    //
-    //     // face
-    //     ctx.beginPath();
-    //     ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
-    //     ctx.fillStyle = color;
-    //     ctx.fill();
-    //     ctx.strokeStyle = "white";
-    //     ctx.lineWidth = 2;
-    //     ctx.stroke();
-    //
-    //     // handle
-    //     ctx.fillStyle = "#e6b35b";
-    //     ctx.beginPath();
-    //     if (isBot) {
-    //         ctx.fillRect(p.x - handleLen * 0.1, p.y - radius - handleLen, handleLen * 0.2, handleLen);
-    //     } else {
-    //         ctx.fillRect(p.x - handleLen * 0.1, p.y + radius * 0.2, handleLen * 0.2, handleLen);
-    //     }
-    //     ctx.fill();
-    //
-    //     ctx.restore();
-    // }
     function drawPaddle(target, isBot = false) {
         if (!(isBot ? botImg.complete : playerImg.complete)) {
             console.warn("⏳ Paddle image not ready yet");
@@ -345,32 +335,108 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    // function updateScore() {
+    //     scoreEl.innerHTML = `You: ${playerScore} — Bot: ${botScore}`;
+    // }
+    function showRoundPopup(title, message) {
+        running = false; // pause the loop
+        overlay.style.display = "flex";
+        overlay.querySelector("h2").textContent = title;
+        overlay.querySelector("p").textContent = message;
+
+        startBtn.style.display = "inline-block";
+        startBtn.textContent = "Next Round";
+
+        // when player clicks, resume with reset scores
+        startBtn.onclick = () => {
+            overlay.style.display = "none";
+            playerScore = 0;
+            botScore = 0;
+            updateScore();
+            resetBall("bot");
+            running = true;
+            last = performance.now();
+            loop(last);
+
+            // reset button text back for later
+            startBtn.textContent = "Start Game";
+            startBtn.onclick = null;
+        };
+    }
+
+
+    function checkRoundEnd() {
+        if (playerScore >= roundWinningScore || botScore >= roundWinningScore) {
+            if (playerScore >= roundWinningScore) {
+                playerRoundsWon++;
+            } else if (botScore >= roundWinningScore) {
+                botRoundsWon++;
+            }
+
+            // End of a round
+            if (currentRound < totalRounds) {
+                showRoundPopup(`Round ${currentRound} finished!`, `Score → You: ${playerScore}, Bot: ${botScore}`);
+                currentRound++;
+            } else {
+                // === Match finished ===
+                if (playerRoundsWon > botRoundsWon) {
+                    soundHandler.play("win");
+                    showFinalResult("You won the match!");
+                } else if (botRoundsWon > playerRoundsWon) {
+                    soundHandler.play("lose");
+                    showFinalResult("You lost the match! Try again?");
+                } else {
+                    showFinalResult("It’s a tie overall!");
+                }
+            }
+        }
+    }
+
+    function showFinalResult(message) {
+        running = false;
+        overlay.style.display = "flex";
+        overlay.querySelector("h2").textContent = message;
+        overlay.querySelector("p").textContent =
+            `Final Rounds → You: ${playerRoundsWon}, Bot: ${botRoundsWon}`;
+
+        // reset everything for next time
+        currentRound = 1;
+        playerScore = botScore = 0;
+        playerRoundsWon = botRoundsWon = 0;
+    }
+
 
     function updateScore() {
-        scoreEl.innerHTML = `You: ${playerScore} — Bot: ${botScore}`;
+        scoreEl.innerHTML = `Round ${currentRound}/${totalRounds}`;
+        // round.innerHTML = `You: ${playerScore} — Bot: ${botScore}`;
+        // roundWon.innerHTML = `Rounds Won You: ${playerRoundsWon}, Bot: ${botRoundsWon}`;
     }
+
 
     // === Logic ===
     function resetBall(to = "player") {
         ball.u = 0.5;
         ball.v = 0.5;
 
-        // very slow start, feels more natural
-        ball.vu = (Math.random() - 0.5) * 0.0008;
-        ball.vv = to === "player" ? -0.0009 : 0.0009;
+        let speedFactor = 0.3; // default normal speed
+        if (difficulty === "medium") speedFactor = 0.6;   // 1× faster
+        if (difficulty === "hard") speedFactor = 0.7;     // 2× faster
+
+        ball.vu = (Math.random() - 0.5) * 0.0008 * speedFactor;
+        ball.vv = (to === "player" ? -0.0009 : 0.0009) * speedFactor;
     }
 
 
-    function showWin(winner) {
-        running = false;
-        overlay.style.display = "flex";
-        overlay.querySelector("h2").textContent = `${winner} won!`;
-        overlay.querySelector(
-            "p"
-        ).textContent = `Final score: You ${playerScore} — Bot ${botScore}`;
-        playerScore = botScore = 0;
-        updateScore();
-    }
+    // function showWin(winner) {
+    //     running = false;
+    //     overlay.style.display = "flex";
+    //     overlay.querySelector("h2").textContent = `${winner} won!`;
+    //     overlay.querySelector(
+    //         "p"
+    //     ).textContent = `Final score: You ${playerScore} — Bot ${botScore}`;
+    //     playerScore = botScore = 0;
+    //     updateScore();
+    // }
 
     // === Input ===
     function pointerToU(x) {
@@ -403,7 +469,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.key === "ArrowUp") player.v = Math.max(0.7, player.v - 0.02);   // forward
         if (e.key === "ArrowDown") player.v = Math.min(0.95, player.v + 0.02); // backward
     });
+
     function hitPaddle(paddle) {
+
         const du = ball.u - paddle.u;
         const dv = ball.v - paddle.v;
         const dist = Math.sqrt(du * du + dv * dv);
@@ -416,6 +484,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const dt = Math.min(40, now - last);
         last = now;
 
+        updateBall(dt);
         // bot AI
         const speed = botSpeed * dt;
         if (bot.u < ball.u - 0.02) bot.u += speed;
@@ -425,34 +494,37 @@ document.addEventListener("DOMContentLoaded", () => {
         ball.u += ball.vu * dt;
         ball.v += ball.vv * dt;
 
-        // walls
+        // wallss
         if (ball.u < 0 || ball.u > 1) ball.vu *= -1;
 
         // collisions
-        // if (
-        //     ball.v > player.v - 0.05 &&
-        //     ball.v < player.v + 0.05 &&
-        //     Math.abs(ball.u - player.u) < player.w * 0.5 &&
-        //     ball.vv > 0
-        // ) {
-        //     ball.vv = -Math.abs(ball.vv) - 0.00005;
-        //     ball.vu += (ball.u - player.u) * 0.015 + spinBoost;
-        //     ball.v = player.v - 0.03;
-        // }
-        //
-        // if (
-        //     ball.v < bot.v + 0.05 &&
-        //     ball.v > bot.v - 0.05 &&
-        //     Math.abs(ball.u - bot.u) < bot.w * 0.5 &&
-        //     ball.vv < 0
-        // ) {
-        //
-        //     ball.vv = Math.abs(ball.vv) + 0.00005;
-        //     ball.vu += (ball.u - bot.u) * 0.012;
-        //     ball.v = bot.v + 0.03;
-        // }
+        if (
+            ball.v > player.v - 0.05 &&
+            ball.v < player.v + 0.05 &&
+            Math.abs(ball.u - player.u) < player.w * 0.5 &&
+            ball.vv > 0
+        ) {
+            ball.vv = -Math.abs(ball.vv) - 0.00005;
+            ball.vu += (ball.u - player.u) * 0.015 + spinBoost;
+            ball.v = player.v - 0.03;
+        }
+
+        if (
+            ball.v < bot.v + 0.05 &&
+            ball.v > bot.v - 0.05 &&
+            Math.abs(ball.u - bot.u) < bot.w * 0.5 &&
+            ball.vv < 0
+        ) {
+
+            ball.vv = Math.abs(ball.vv) + 0.00005;
+            ball.vu += (ball.u - bot.u) * 0.012;
+            ball.v = bot.v + 0.03;
+        }
         // Player hit
         if (hitPaddle(player) && ball.vv > 0) {
+
+            soundHandler.play("hitPaddle");
+
             ball.vv = -Math.abs(ball.vv) - 0.00005;
             ball.vu += (ball.u - player.u) * 0.015 + spinBoost;
             ball.v = player.v - 0.03;
@@ -460,24 +532,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Bot hit
         if (hitPaddle(bot) && ball.vv < 0) {
+            soundHandler.play("hitPaddle");
+
             ball.vv = Math.abs(ball.vv) + 0.00005;
             ball.vu += (ball.u - bot.u) * 0.012;
             ball.v = bot.v + 0.03;
         }
 
-
         // scoring
         if (ball.v < -0.05) {
             playerScore++;
+            soundHandler.play("score");
             updateScore();
-            if (playerScore >= winningScore) return showWin("You");
+            checkRoundEnd();
             resetBall("bot");
         } else if (ball.v > 1.05) {
             botScore++;
+            soundHandler.play("score");
             updateScore();
-            if (botScore >= winningScore) return showWin("Bot");
+            checkRoundEnd();
             resetBall("player");
         }
+
+
+        // if (ball.u < 0 || ball.u > 1) {
+        //     soundHandler.play("hitTable");
+        //     ball.vu *= -1;
+        // }
+
 
         // draw
         ctx.clearRect(0, 0, width, height);
@@ -492,12 +574,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (ball.v < player.v - 0.05) {
             drawBall();
-            drawPaddle(bot,  true);
-            drawPaddle(player,  false);
+            drawPaddle(bot, true);
+            drawPaddle(player, false);
         } else {
-            drawPaddle(bot,  true);
+            drawPaddle(bot, true);
             drawBall();
-            drawPaddle(player,  false);
+            drawPaddle(player, false);
         }
 
         requestAnimationFrame(loop);
@@ -522,4 +604,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     resetBall("bot");
     updateScore();
+
+    // btnBack.addEventListener("click", () => (location.href = "/"));
+    // btnExit.addEventListener("click", () => (location.href = "/"));
+
+    // resetBall("bot");
+    // updateScore();
 });

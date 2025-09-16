@@ -1,45 +1,58 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>Ping Pong - Bot</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="game-body">
 <div id="ui-top">
     <button id="btn-back" class="small-btn">Back</button>
-    <div id="score">You: 0 &nbsp; — &nbsp; Bot: 0</div>
+    <div id="score"></div>
+
 </div>
 
 <canvas id="gameCanvas"></canvas>
 
-<!--<div id="overlay">-->
-<!--    <div class="overlay-card">-->
-<!--        <h2>Play vs Bot</h2>-->
-<!--        <p>Use mouse or touch to move your racket horizontally. Tap/drag for spin.</p>-->
-<!--        <button id="startBtn" class="btn big">Start Game</button>-->
-<!--    </div>-->
-<!--</div>-->
-<div id="overlay">
+<div id="overlay" class="active">
     <div class="overlay-card">
-        <h2>Select Difficulty</h2>
-        <p>Choose how tough the bot should be.</p>
-        <div class="level-select">
-            <div class="level-btn-container">
-                <button class="btn level-btn" data-level="easy">Easy</button>
-                <button class="btn level-btn" data-level="medium">Medium</button>
-                <button class="btn level-btn" data-level="hard">Hard</button>
-            </div>
-            <button id="btn-exit" class="small-btn">Exit</button>
-
-
+        <div class="top-bar">
+            <h2>Select Difficulty</h2>
+            <button id="btn-mute" class="mute-btn"></button>
         </div>
-        <button id="startBtn" class="btn big" style="display:none;">Start Game</button>
+
+        <p>Choose how tough the bot should be.</p>
+
+        <div class="difficulty-container">
+<!--            <div id="selected-level">Medium</div>-->
+            <div class="progress-track">
+                <div class="progress-fill"></div>
+                <div class="progress-points">
+                    <span data-level="easy">●</span>
+                    <span data-level="medium">●</span>
+                    <span data-level="hard">●</span>
+                </div>
+            </div>
+            <div class="difficulty-slider">
+                <div class="cube">
+                    <div class="face easy">Easy</div>
+                    <div class="face medium">Medium</div>
+                    <div class="face hard">Hard</div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-buttons">
+            <div id="btn-exit" class="small-btn">Exit</div>
+            <div id="startBtn" class="btn big" style="display:none;">Start Game</div>
+        </div>
+
     </div>
 </div>
 
+<script type="module" src="/js/game.js"></script>
+<script type="module" src="/js/cubeProgress.js"></script>
+<script type="module" src="/js/progressBar.js"></script>
 
-<script src="/js/game.js"></script>
 </body>
 </html>
