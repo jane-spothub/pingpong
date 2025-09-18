@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //     overlay.classList.remove("active");
     // }
 
-        // showOverlay(); // show the difficulty overlay immediately
+    // showOverlay(); // show the difficulty overlay immediately
 
     // [playerImg, botImg].forEach(img => {
     //     img.onload = () => {
@@ -466,7 +466,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-
     // === Logic ===
     function resetBall(to = "player") {
         if (to === "bot") {
@@ -531,7 +530,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const targetU = pointerToU(e.clientX);
         player.u = lerp(player.u, targetU, 0.25); // smooth follow
     });
-
 
 
     canvas.addEventListener("pointerup", () => (pointerDown = false));
@@ -632,19 +630,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         // === Check win/lose conditions ===
         if (playerScore >= 7) {
-            const { earnedXP, earnedCoins } = grantRewards(true);
+            const {earnedXP, earnedCoins} = grantRewards(true);
             endLevel();
             showEndOverlay(true, earnedXP, earnedCoins);
             return;
         }
 
         if (botScore >= 7) {
-            const { earnedXP, earnedCoins } = grantRewards(false);
+            const {earnedXP, earnedCoins} = grantRewards(false);
             endLevel();
             showEndOverlay(false, earnedXP, earnedCoins);
             return;
         }
-
 
 
         ctx.clearRect(0, 0, width, height);
@@ -783,7 +780,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             await fetch("/api/progress", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     xp: playerXP,
                     level: playerLevel,
@@ -846,10 +843,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // let levelXPGoal = 200; // target XP for win
     // let levelTimerId = null;
     const rewardRules = {
-        1: { winXP: 100, loseXP: 50, winCoins: 50, loseCoins: 25 },
-        2: { winXP: 120, loseXP: 60, winCoins: 60, loseCoins: 30 },
+        1: {winXP: 100, loseXP: 50, winCoins: 50, loseCoins: 25},
+        2: {winXP: 120, loseXP: 60, winCoins: 60, loseCoins: 30},
         // Add more categories if needed
     };
+
     function grantRewards(win) {
         const rules = rewardRules[currentCategory] || rewardRules[1];
         let earnedXP, earnedCoins;
@@ -872,9 +870,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         saveProgress(); // ✅ persist changes
 
-        return { earnedXP, earnedCoins };
+        return {earnedXP, earnedCoins};
     }
-
 
 
     function startLevel() {
@@ -892,7 +889,6 @@ document.addEventListener("DOMContentLoaded", () => {
         last = performance.now();
 
 
-
         loop(performance.now());
     }
 
@@ -900,7 +896,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function endLevel() {
         running = false;
         // if (levelTimerId) clearInterval(levelTimerId);
-            scoreEl.classList.remove("active");
+        scoreEl.classList.remove("active");
         document.getElementById("progressBar").classList.add("active");
     }
 
@@ -962,15 +958,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const unlocks = {
-        1: { table: "classic", paddle: "default", ball: "white" },
-        2: { paddle: "neon", ball: "fire" },
-        3: { table: "space", paddle: "laser" },
+        1: {table: "classic", paddle: "default", ball: "white"},
+        2: {paddle: "neon", ball: "fire"},
+        3: {table: "space", paddle: "laser"},
         // ... up to 10
     };
 
     function getUnlockedTheme(category) {
         return unlocks[category] || unlocks[1];
     }
+
     const categoryIcon = document.getElementById("categoryIcon");
 
     function showCategoryIcon() {
