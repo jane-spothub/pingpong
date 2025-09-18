@@ -55,7 +55,8 @@
 
         <!-- Progress Display -->
         <div id="progressHomeBar">
-            <span id="xp-display">XP: 0 | Lvl: 1</span>
+
+            <span id="xp-display">💎: 0 | Lvl: 1</span>
             <span id="coins-display">💰 0</span>
         </div>
 <!--        bottom pad-->
@@ -103,11 +104,7 @@
         document.querySelector("#howToPlay").classList.add("hidden");
         document.querySelector("#home").classList.remove("hidden");
     });
-    //
-    // document.getElementById("btnPlayNow").addEventListener("click", () => {
-    //     document.querySelector("#howToPlay").classList.add("hidden");
-    //     document.querySelector("#overlay").classList.add("active");
-    // });
+
 </script>
 <script>
     async function fetchProgress() {
@@ -116,7 +113,7 @@
             const data = await res.json();
 
             // update UI
-            document.getElementById("xp-display").textContent = `XP: ${data.xp} | Lvl: ${data.level}`;
+            document.getElementById("xp-display").textContent = `💎: ${data.xp} | Lvl: ${data.level}`;
             document.getElementById("coins-display").textContent = `💰 ${data.coins}`;
         } catch (err) {
             console.error("❌ Failed to fetch progress:", err);

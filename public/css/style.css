@@ -171,7 +171,7 @@ body, html {
     display: none;
 }
 
-#progressBar.active, #score-display.active,#progressHomeBar {
+#progressBar.active, #score-display.active{
     position: absolute;
     top: 15px;
     left: 50%;
@@ -186,6 +186,22 @@ body, html {
     padding: 8px 20px;
     border-radius: 12px;
     align-items: center;
+}
+#progressHomeBar {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    width:90%;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background: rgba(0,0,0,0.4);
+    padding: 8px 0;
+    border-radius: 12px;
 }
 
 #endOverlay {
