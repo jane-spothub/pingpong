@@ -7,51 +7,55 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="game-body">
-<div class="canvas-container">
+<div id="gameContainer">
+    <div id="progressBar">
+        <span id="xp-display">XP: 0 | Lvl: 1</span>
+        <span id="coins-display">💰 0</span>
+    </div>
+    <div id="score-display">Player: 0 | Bot: 0</div>
 
-<div id="ui-top">
-    <button id="btn-back" class="small-btn">Back</button>
-    <div id="score"></div>
 
-</div>
+    <div id="categoryIcon" class="category-icon hidden"></div>
+
     <canvas id="gameCanvas"></canvas>
 
-</div>
-
-<div id="overlay" class="active">
-    <div class="overlay-card">
-        <div class="top-bar">
-            <h2>Select Difficulty</h2>
-            <button id="btn-mute" class="mute-btn"></button>
+    <div id="categoryOverlay" class="overlay hidden">
+        <div class="overlay-card">
+            <h2>Select Category</h2>
+            <div id="categoryList" class="category-list"></div>
+            <h3>Select Level</h3>
+            <div id="levelList" class="level-list"></div>
         </div>
-
-        <p>Choose how tough the bot should be.</p>
-
-        <div class="difficulty-container">
-<!--            <div id="selected-level">Medium</div>-->
-            <div class="progress-track">
-                <div class="progress-fill"></div>
-                <div class="progress-points">
-                    <span data-level="easy">●</span>
-                    <span data-level="medium">●</span>
-                    <span data-level="hard">●</span>
-                </div>
-            </div>
-            <div class="difficulty-slider">
-                <div class="cube">
-                    <div class="face easy">Easy</div>
-                    <div class="face medium">Medium</div>
-                    <div class="face hard">Hard</div>
-                </div>
-            </div>
-        </div>
-        <div class="bottom-buttons">
-            <div id="btn-exit" class="small-btn">Exit</div>
-            <div id="startBtn" class="btn big" style="display:none;">Start Game</div>
-        </div>
+        <button id="skipCategoryBtn" class="btn">Skip</button>
 
     </div>
 </div>
+
+<div id="endOverlay">
+    <div class="overlay-card">
+        <h2 id="endTitle">Level Failed!</h2>
+        <div id="endEmoji">😟</div>
+        <div class="reward-row">
+            <div class="reward">
+                <span class="icon">💎</span>
+                <span id="earnedXP">0</span>
+            </div>
+            <div class="reward">
+                <span class="icon">💰</span>
+                <span id="earnedCoins">0</span>
+            </div>
+            <div class="reward level">
+                Level <span id="levelReached">1</span>
+            </div>
+        </div>
+        <div class="overlay-buttons">
+            <div id="reviveBtn" class="btn big">Revive</div>
+            <div id="nextBtn" class="btn big">Next Level</div>
+            <div id="homeBtn" class="btn">Home</div>
+        </div>
+    </div>
+</div>
+
 
 <script type="module" src="/js/game.js"></script>
 <script type="module" src="/js/cubeProgress.js"></script>

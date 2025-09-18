@@ -10,7 +10,7 @@
 <!-- 🔹 Loader -->
 <div id="loader">
     <div class="loader-content">
-        <img src="/assets/img/pingpong-poster.png" alt="Loading Logo">
+        <img src="/assets/img/pingpong-loader.png" alt="Loading Logo">
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
@@ -18,32 +18,53 @@
     </div>
 </div>
 
-<!-- 🔹 Main content -->
-<div  id="main-content" style="display:none;">
-    <header class="home-header">
-        <img src="/assets/img/pingpong-poster.png" alt="Ping Pong Poster">
-    </header>
-<div>
-    <div class="home-card">
-        <h1 class="title">PING PONG</h1>
-        <p class="instructions">Use your finger (or mouse) to move the racket and spin the ball. Get 7 points to win!</p>
+    <div id="gameContainer">
+        <canvas id="gameHomePaddle"></canvas>
 
-
-        <div class="big-buttons">
-            <a href="#" onclick="alert('Play vs friend not implemented here'); return false;" class="btn big">
-                <span class="icon">👤</span> PLAY VS. FRIEND
-            </a>
-
-            <a href="/bot" class="btn big">
-                <span class="icon">🤖</span> PLAY VS. BOT
-            </a>
+        <!-- Left Menu -->
+        <div class="side-menu left">
+            <div class="menu-btn">
+               <div class="menu-btn-icon">🏆 </div>
+                Challenge
+            </div>
+            <div class="menu-btn">
+                <div class="menu-btn-icon">🎁 </div>
+                Daily
+            </div>
+            <div class="menu-btn">
+                <div class="menu-btn-icon">💎</div>
+                Shop
+            </div>
         </div>
-        <button id="btnHowToPlay"  class="btn how-to">▶ HOW TO PLAY</button>
+
+        <!-- Right Menu -->
+        <div class="side-menu right">
+            <div class="menu-btn">
+              <div class="menu-btn-icon">🏓</div>
+                Upgrade
+            </div>
+            <div class="menu-btn">
+                <div class="menu-btn-icon">🎖️ </div>
+                Awards
+            </div>
+            <div class="menu-btn">
+                <div class="menu-btn-icon">⚙️</div>
+                Settings
+            </div>
+        </div>
+
+        <!-- Progress Display -->
+        <div id="progressHomeBar">
+            <span id="xp-display">XP: 0 | Lvl: 1</span>
+            <span id="coins-display">💰 0</span>
+        </div>
+<!--        bottom pad-->
+        <a id="btnPlay" href="/bot" class="btn big">
+            ▶ PLAY
+        </a>
 
     </div>
-</div>
 
-</div>
 
 <div id="howToPlay" class="container how-to-play hidden">
     <h1>How to Play</h1>
@@ -69,6 +90,7 @@
 <!--    <button id="btnPlayNow" class="btn big">Start Playing</button>-->
     <button id="btnBackHome" class="btn">Back to Home</button>
 </div>
+<script src="/js/paddlehome.js"></script>
 
 <script>
     document.querySelector(".btn.how-to").addEventListener("click", () => {
@@ -88,8 +110,28 @@
     // });
 </script>
 <script>
+    async function fetchProgress() {
+        try {
+            const res = await fetch("/api/progress");
+            const data = await res.json();
 
+            // update UI
+            document.getElementById("xp-display").textContent = `XP: ${data.xp} | Lvl: ${data.level}`;
+            document.getElementById("coins-display").textContent = `💰 ${data.coins}`;
+        } catch (err) {
+            console.error("❌ Failed to fetch progress:", err);
+        }
+    }
 
+    // 🔹 fetch immediately when page loads
+    document.addEventListener("DOMContentLoaded", () => {
+        fetchProgress();
+
+        // 🔹 auto-refresh every 3s
+        setInterval(fetchProgress, 3000);
+    });
+</script>
+<script>
     document.addEventListener("DOMContentLoaded", () => {
         const progressBar = document.getElementById("progress-bar");
         const progressText = document.getElementById("progress-text");

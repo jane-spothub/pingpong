@@ -4,19 +4,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     const soundHandler = new SoundHandler();
-    const overlay = document.getElementById("overlay");
-    const startBtn = document.getElementById("startBtn");
-    const btnBack = document.getElementById("btn-back");
-    const btnExit = document.getElementById("btn-exit");
-    const btnMute = document.getElementById("btn-mute");
-    const scoreEl = document.getElementById("score");
-    const round = document.getElementById("round");
-    // const roundWon = document.getElementById("round-won");
+    const scoreEl = document.getElementById("score-display");
+
+    // const startBtn = document.getElementById("startBtn");
+    // const btnBack = document.getElementById("btn-back");
+    // const btnExit = document.getElementById("btn-exit");
+    // const btnMute = document.getElementById("btn-mute");
+    // endOverlay.classList.remove("hidden");
+    let playerScore = 0;
+    let botScore = 0;
+
     let botSpeed = 0.00025; // default
-    btnMute.textContent = "🔊";
+    // btnMute.textContent = "🔊";
     let width = 800,
         height = 800;
-    // const levelButtons = document.querySelectorAll(".level-btn");
 
     const playerImg = new Image();
     playerImg.src = "assets/img/player-paddle.png";
@@ -25,58 +26,59 @@ document.addEventListener("DOMContentLoaded", () => {
     botImg.src = "assets/img/bot-paddle.png"; // fixed typo
     let imagesLoaded = 0;
 
-    function showOverlay() {
-        overlay.classList.add("active");
-    }
+    // function showOverlay() {
+    //     overlay.classList.add("active");
+    // }
+    //
+    // function hideOverlay() {
+    //     overlay.classList.remove("active");
+    // }
 
-    function hideOverlay() {
-        overlay.classList.remove("active");
-    }
+        // showOverlay(); // show the difficulty overlay immediately
 
-    document.addEventListener("DOMContentLoaded", () => {
-        showOverlay(); // show the difficulty overlay immediately
+    // [playerImg, botImg].forEach(img => {
+    //     img.onload = () => {
+    //         imagesLoaded++;
+    //         if (imagesLoaded === 2) {
+    //             console.log("✅ Both paddles ready");
+    //             // Only now allow the game to start
+    //             resetBall("bot");
+    //             // startGame();
+    //             startLevel();
+    //         }
+    //         // if (imagesLoaded === 2) {
+    //         //     console.log("✅ Both paddles ready");
+    //         //     drawScene();  // show frozen preview
+    //         //     updateScore();
+    //         // }
+    //     };
+    //     img.onerror = () => console.error("❌ Failed to load", img.src);
+    // });
+    Promise.all([
+        new Promise(res => playerImg.onload = res),
+        new Promise(res => botImg.onload = res)
+    ]).then(() => {
+        console.log("✅ Images ready, starting level");
+        resetBall("bot");
+        startLevel();
+    }).catch(() => {
+        console.warn("⚠️ Images failed, starting anyway");
+        resetBall("bot");
+        startLevel();
     });
 
-    [playerImg, botImg].forEach(img => {
-        img.onload = () => {
-            imagesLoaded++;
-            if (imagesLoaded === 2) {
-                console.log("✅ Both paddles ready");
-                // Only now allow the game to start
-                resetBall("bot");
-                updateScore();
-            }
-        };
-        img.onerror = () => console.error("❌ Failed to load", img.src);
-    });
 
-    btnMute.addEventListener("click", () => {
-        soundHandler.toggleMute();
-        btnMute.textContent = soundHandler.muted ? "🔇" : "🔊";
-        // for img
-        // btnMute.style.backgroundImage = soundHandler.muted
-        //     ? `url(${muteIcon})`
-        //     : `url(${unmuteIcon})`;
-    });
+    // btnMute.addEventListener("click", () => {
+    //     soundHandler.toggleMute();
+    //     btnMute.textContent = soundHandler.muted ? "🔇" : "🔊";
+    //     // for img
+    //     // btnMute.style.backgroundImage = soundHandler.muted
+    //     //     ? `url(${muteIcon})`
+    //     //     : `url(${unmuteIcon})`;
+    // });
 
 
     let difficulty = window.difficulty || "easy";
-
-    // levelButtons.forEach(btn => {
-    //     btn.addEventListener("click", () => {
-    //         difficulty = btn.dataset.level;
-    //
-    //         if (difficulty === "easy") botSpeed = 0.00018;
-    //         if (difficulty === "medium") botSpeed = 0.00025;
-    //         if (difficulty === "hard") botSpeed = 0.00035;
-    //
-    //         document.querySelector("h2").textContent = `Level: ${difficulty.toUpperCase()}`;
-    //         document.querySelector("p").textContent = "Ready? Click Start to play.";
-    //         document.querySelector(".level-select").style.display = "none";
-    //         document.getElementById("startBtn").style.display = "inline-block";
-    //     });
-    // });
-
 
     function resize() {
         const dpr = window.devicePixelRatio || 1;
@@ -95,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener("resize", resize);
     resize();
+
 
     // === Helpers ===
     function lerp(a, b, t) {
@@ -135,19 +138,9 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // === Game State ===
-    // const player = {u: 0.5, v: 0.82, w: 0.25};
-    // const bot = {u: 0.5, v: 0.08, w: 0.25};
+
     const player = {u: 0.5, v: 0.83, w: 0.25}; // below bottom edge
     const bot = {u: 0.5, v: -0.02, w: 0.25}; // above top edge
-
-    // const ball = {u: 0.5, v: 0.5, vu: 0.004, vv: 0.004, radius: 0.04};
-    // const ball = {
-    //     u: 0.5, v: 0.5,       // position on table (2D)
-    //     vu: 0.004, vv: 0.004, // velocity along table
-    //     z: 0.05, vz: 0,       // height above table, vertical velocity
-    //     radius: 0.03
-    // };
 
     const ball = {
         u: 0.5, v: 0.5,
@@ -156,15 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
         radius: 0.03
     };
 
-
-    let playerScore = 0,
-        botScore = 0;
-    // const winningScore = 7;
-    const roundWinningScore = 3;  // score needed to win a round
-    let currentRound = 1;
-    let playerRoundsWon = 0;
-    let botRoundsWon = 0;
-    const totalRounds = 3;
 
     let running = false;
     let last = performance.now();
@@ -179,13 +163,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const w = width;
         const h = height;
 
-        // const topScale = 0.6;
         const tableHeight = h * 0.65;
         const tableWidth = w * 0.9;
-        // const tableWidthTop = tableWidthBottom * topScale;
 
-        // const bottomY = h * 0.88;
-        // const topY = bottomY - tableHeight;
         const topY = (h - tableHeight) / 2;
         const bottomY = topY + tableHeight;
 
@@ -204,30 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.shadowBlur = 30;       // softness of shadow
         ctx.shadowOffsetX = 0;     // equal all sides
         ctx.shadowOffsetY = 0;
-
-        // draw a filled path just to "drop" the shadow
-        // ctx.fillStyle = "#75c93f"; // same color as table (placeholder)
-        // ctx.beginPath();
-        // ctx.moveTo(leftTop.x, leftTop.y);
-        // ctx.lineTo(rightTop.x, rightTop.y);
-        // ctx.lineTo(rightBottom.x, rightBottom.y);
-        // ctx.lineTo(leftBottom.x, leftBottom.y);
-        // ctx.closePath();
-        // ctx.fill();
-        // ctx.restore();
-        // === shadow ===
-        // ctx.beginPath();
-        // ctx.moveTo(leftBottom.x, leftBottom.y);
-        // ctx.lineTo(rightBottom.x, rightBottom.y);
-        // ctx.lineTo(rightBottom.x, rightBottom.y + 80);
-        // ctx.lineTo(leftBottom.x, leftBottom.y + 80);
-        // ctx.closePath();
-        //
-        // const shadowGrad = ctx.createLinearGradient(0, bottomY, 0, bottomY + 80);
-        // shadowGrad.addColorStop(0, "rgba(0,0,0,0.35)");
-        // shadowGrad.addColorStop(1, "rgba(0,0,0,0)");
-        // ctx.fillStyle = shadowGrad;
-        // ctx.fill();
 
         // === table top ===
         const grd = ctx.createLinearGradient(leftTop.x, topY, leftBottom.x, bottomY);
@@ -308,24 +264,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.restore();
     }
 
-
-    // function drawNet() {
-    //     const steps = 60;
-    //     ctx.save();
-    //     ctx.strokeStyle = "rgba(255,255,255,0.8)";
-    //     ctx.lineWidth = 2;
-    //     for (let i = 0; i <= steps; i++) {
-    //         const u = i / steps;
-    //         const top = worldToScreen(u, 0.48);
-    //         const bottom = worldToScreen(u, 0.52);
-    //         ctx.beginPath();
-    //         ctx.moveTo(top.x, top.y);
-    //         ctx.lineTo(bottom.x, bottom.y);
-    //         ctx.stroke();
-    //     }
-    //     ctx.restore();
-    // }
-
     function updateBall(dt) {
         // move in table plane
         ball.u += ball.vu * dt;
@@ -388,251 +326,216 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.restore();
     }
 
-    function drawPaddle(ctx, x, y, radius, color, isBot = false, useRound = false) {
+//     function drawPaddle(ctx, x, y, radius, color, isBot = false, useRound = false) {
+//         ctx.save();
+//
+//         // === Shadow below paddle ===
+//         ctx.beginPath();
+//         ctx.ellipse(x + radius * 0.2, y + radius * 0.3, radius * 1.1, radius * 0.4, 0, 0, Math.PI * 2);
+//         ctx.fillStyle = "rgba(0,0,0,0.35)";
+//         ctx.filter = "blur(6px)";
+//         ctx.fill();
+//         ctx.filter = "none";
+//
+//         if (useRound) {
+//             // --- 🏓 Paddle head (round, glossy) ---
+//             const grad = ctx.createRadialGradient(x - radius * 0.4, y - radius * 0.4, radius * 0.2, x, y, radius);
+//             grad.addColorStop(0, color === "#e74c3c" ? "#ff6f61" : "#61a5ff"); // brighter center (red or blue)
+//             grad.addColorStop(0.6, color);
+//             grad.addColorStop(1, "#222"); // dark edge
+//
+//             ctx.fillStyle = grad;
+//             ctx.beginPath();
+//             ctx.arc(x, y, radius, 0, Math.PI * 2);
+//             ctx.fill();
+//
+//             // --- Shine ---
+//             const shine = ctx.createRadialGradient(x - radius * 0.5, y - radius * 0.5, radius * 0.1, x, y, radius);
+//             shine.addColorStop(0, "rgba(255,255,255,0.5)");
+//             shine.addColorStop(1, "rgba(255,255,255,0)");
+//             ctx.fillStyle = shine;
+//             ctx.beginPath();
+//             ctx.arc(x, y, radius, 0, Math.PI * 2);
+//             ctx.fill();
+//
+//             // --- 🪵 Handle ---
+//             const handleWidth = radius * 0.45;
+//             const handleHeight = radius * 1.2;
+//             const handleY = isBot ? y - radius - handleHeight + 10 : y + radius - 10;
+//
+//             // wood base
+//             ctx.fillStyle = "#8B5A2B";
+//             ctx.beginPath();
+//             ctx.roundRect(x - handleWidth / 2, handleY, handleWidth, handleHeight, 10);
+//             ctx.fill();
+//
+//             // wood shading
+//             const woodGrad = ctx.createLinearGradient(x - handleWidth / 2, handleY, x + handleWidth / 2, handleY + handleHeight);
+//             woodGrad.addColorStop(0, "rgba(0,0,0,0.2)");
+//             woodGrad.addColorStop(1, "rgba(255,255,255,0.1)");
+//             ctx.fillStyle = woodGrad;
+//             ctx.beginPath();
+//             ctx.roundRect(x - handleWidth / 2, handleY, handleWidth, handleHeight, 10);
+//             ctx.fill();
+//
+//             // outline
+//             ctx.lineWidth = 3;
+//             ctx.strokeStyle = "#000";
+//             ctx.stroke();
+//         } else {
+//             // fallback (old style rectangular paddle)
+//             ctx.fillStyle = color;
+//             ctx.fillRect(x - radius / 2, y - radius / 2, radius, radius * 0.25);
+//         }
+//
+//         ctx.restore();
+//     }
+
+    function drawPaddle(ctx, x, y, radius, color, isBot = false, useRound = true) {
         ctx.save();
 
-        // === Shadow (to the right side) ===
+        // === Shadow below paddle ===
         ctx.beginPath();
-        ctx.arc(x + radius * 0.35, y + radius * 0.15, radius * 1.05, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+        ctx.ellipse(x + radius * 0.2, y + radius * 0.3, radius * 1.1, radius * 0.4, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0,0,0,0.35)";
         ctx.filter = "blur(6px)";
         ctx.fill();
         ctx.filter = "none";
 
         if (useRound) {
-            // === ROUND PADDLE WITH HANDLE ===
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = "#000";
-            ctx.fillStyle = color;
+            // --- 🏓 Paddle head (round glossy gradient) ---
+            const grad = ctx.createRadialGradient(
+                x - radius * 0.4, y - radius * 0.4, radius * 0.2,
+                x, y, radius
+            );
+            grad.addColorStop(0, color === "#e74c3c" ? "#ff6f61" : "#61a5ff"); // brighter inner glow
+            grad.addColorStop(0.6, color);
+            grad.addColorStop(1, "#222"); // darker outer edge
 
-            // Paddle head (circle)
+            ctx.fillStyle = grad;
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
             ctx.fill();
-            ctx.stroke();
 
-            // === Center line inside the circle ===
-            ctx.beginPath();
-            ctx.moveTo(x - radius * 0.6, y);  // left edge
-            ctx.lineTo(x + radius * 0.6, y);  // right edge
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = "rgba(0,0,0,0.8)";
-            ctx.stroke();
-            // === Center line inside the circle ===
-            ctx.lineWidth = 3;
-
-// main line (dark)
-            ctx.beginPath();
-            ctx.moveTo(x - radius * 0.6, y);
-            ctx.lineTo(x + radius * 0.6, y);
-            ctx.strokeStyle = "rgba(0,0,0,0.8)";
-            ctx.stroke();
-
-// highlight above (lighter shadow)
-            ctx.beginPath();
-            ctx.moveTo(x - radius * 0.6, y - 2);
-            ctx.lineTo(x + radius * 0.6, y - 2);
-            ctx.strokeStyle = "rgba(0,0,0,0.6)";
-            ctx.stroke();
-
-// shadow below (darker shadow)
-            ctx.beginPath();
-            ctx.moveTo(x - radius * 0.6, y + 2);
-            ctx.lineTo(x + radius * 0.6, y + 2);
-            ctx.strokeStyle = "rgba(0,0,0,0.5)";
-            ctx.stroke();
-
-
-            // Handle
-            const handleWidth = radius * 0.4;
-            const handleHeight = radius * 0.9;
-            ctx.beginPath();
-            ctx.rect(
-                x - handleWidth / 2,
-                isBot ? y - radius - handleHeight : y + radius,
-                handleWidth,
-                handleHeight
+            // --- Shine reflection ---
+            const shine = ctx.createRadialGradient(
+                x - radius * 0.5, y - radius * 0.5, radius * 0.1,
+                x, y, radius
             );
+            shine.addColorStop(0, "rgba(255,255,255,0.5)");
+            shine.addColorStop(1, "rgba(255,255,255,0)");
+            ctx.fillStyle = shine;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
             ctx.fill();
+
+            // --- 🪵 Handle (wood look) ---
+            const handleWidth = radius * 0.45;
+            const handleHeight = radius * 1.2;
+            const handleY = isBot ? y - radius - handleHeight + 10 : y + radius - 10;
+
+            // Wood base
+            ctx.fillStyle = "#8B5A2B";
+            ctx.beginPath();
+            ctx.roundRect(x - handleWidth / 2, handleY, handleWidth, handleHeight, 10);
+            ctx.fill();
+
+            // Wood shading overlay
+            const woodGrad = ctx.createLinearGradient(
+                x - handleWidth / 2, handleY,
+                x + handleWidth / 2, handleY + handleHeight
+            );
+            woodGrad.addColorStop(0, "rgba(0,0,0,0.25)");
+            woodGrad.addColorStop(1, "rgba(255,255,255,0.15)");
+            ctx.fillStyle = woodGrad;
+            ctx.beginPath();
+            ctx.roundRect(x - handleWidth / 2, handleY, handleWidth, handleHeight, 10);
+            ctx.fill();
+
+            // Handle outline
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#000";
             ctx.stroke();
         } else {
-            // === OLD STYLE (rectangular paddle) ===
+            // --- fallback old rectangle paddle ---
             ctx.fillStyle = color;
-            ctx.fillRect(x - radius / 2, y - radius / 2, radius, radius * 0.2);
+            ctx.fillRect(x - radius / 2, y - radius / 2, radius, radius * 0.25);
         }
 
         ctx.restore();
     }
 
 
-    // function drawPaddle(target, isBot = false) {
-    //     if (!(isBot ? botImg.complete : playerImg.complete)) {
-    //         console.warn("⏳ Paddle image not ready yet");
-    //         return;
-    //     }
-    //
-    //     const p = worldToScreen(target.u, target.v);
-    //     const scale = p.scale;
-    //
-    //     const baseSize = Math.min(width, height) * 0.12; // ~12% of screen
-    //     const w = baseSize * scale;
-    //     const h = baseSize * scale;
-    //
-    //
-    //     ctx.save();
-    //
-    //     // === shadow under paddle ===
-    //     ctx.beginPath();
-    //     ctx.ellipse(p.x, p.y + h * 0.35, w * 0.6, h * 0.25, 0, 0, Math.PI * 2);
-    //     ctx.fillStyle = "rgba(0,0,0,0.35)";
-    //     ctx.filter = "blur(6px)";
-    //     ctx.fill();
-    //     ctx.filter = "none";
-    //
-    //     // === paddle image ===
-    //     ctx.drawImage(isBot ? botImg : playerImg, p.x - w / 2, p.y - h / 2, w, h);
-    //
-    //     ctx.restore();
-    // }
-
-
-    // function updateScore() {
-    //     scoreEl.innerHTML = `You: ${playerScore} — Bot: ${botScore}`;
-    // }
-    function showRoundPopup(title, message) {
-        running = false; // pause the loop
-        overlay.style.display = "flex";
-        overlay.querySelector("h2").textContent = title;
-        overlay.querySelector("p").textContent = message;
-
-        startBtn.style.display = "inline-block";
-        startBtn.textContent = "Next Round";
-
-        // when player clicks, resume with reset scores
-        startBtn.onclick = () => {
-            overlay.style.display = "none";
-            playerScore = 0;
-            botScore = 0;
-            updateScore();
-            resetBall("bot");
-            running = true;
-            last = performance.now();
-            loop(last);
-
-            // reset button text back for later
-            startBtn.textContent = "Start Game";
-            startBtn.onclick = null;
-        };
-    }
-
-
-    function checkRoundEnd() {
-        if (playerScore >= roundWinningScore || botScore >= roundWinningScore) {
-            if (playerScore >= roundWinningScore) {
-                playerRoundsWon++;
-            } else if (botScore >= roundWinningScore) {
-                botRoundsWon++;
-            }
-
-            // End of a round
-            if (currentRound < totalRounds) {
-                showRoundPopup(`Round ${currentRound} finished!`, `Score → You: ${playerScore}, Bot: ${botScore}`);
-                currentRound++;
-            } else {
-                // === Match finished ===
-                if (playerRoundsWon > botRoundsWon) {
-                    soundHandler.play("win");
-                    showFinalResult("You won the match!");
-                } else if (botRoundsWon > playerRoundsWon) {
-                    soundHandler.play("lose");
-                    showFinalResult("You lost the match! Try again?");
-                } else {
-                    showFinalResult("It’s a tie overall!");
-                }
-            }
-        }
-    }
-
-    function showFinalResult(message) {
-        running = false;
-        overlay.style.display = "flex";
-        overlay.querySelector("h2").textContent = message;
-        overlay.querySelector("p").textContent =
-            `Final Rounds → You: ${playerRoundsWon}, Bot: ${botRoundsWon}`;
-
-        // reset everything for next time
-        currentRound = 1;
-        playerScore = botScore = 0;
-        playerRoundsWon = botRoundsWon = 0;
-    }
-
-
-    function updateScore() {
-        scoreEl.innerHTML = `Round ${currentRound}/${totalRounds}`;
-        // round.innerHTML = `You: ${playerScore} — Bot: ${botScore}`;
-        // roundWon.innerHTML = `Rounds Won You: ${playerRoundsWon}, Bot: ${botRoundsWon}`;
-    }
-
 
     // === Logic ===
     function resetBall(to = "player") {
-        // place ball near bot or player depending on who serves
         if (to === "bot") {
             ball.u = bot.u;
-            ball.v = bot.v + 0.06;  // just below bot paddle so it goes down
+            ball.v = bot.v + 0.06;
         } else {
             ball.u = player.u;
-            ball.v = player.v - 0.06; // just above player paddle so it goes up
+            ball.v = player.v - 0.06;
         }
 
-        let speedFactor = 0.3; // default normal speed
-        if (difficulty === "medium") speedFactor = 0.6;
-        if (difficulty === "hard") speedFactor = 0.7;
+        let speedFactor = 0.7; // easy
+        botSpeed = 0.00020;    // default bot speed
+
+        if (difficulty === "medium") {
+            speedFactor = 1.4;
+            botSpeed = 0.00035;
+        }
+        if (difficulty === "hard") {
+            speedFactor = 2.0;
+            botSpeed = 0.00055;
+        }
 
         // random horizontal push
-        ball.vu = (Math.random() - 0.5) * 0.0008 * speedFactor;
+        ball.vu = (Math.random() - 0.5) * 0.0012 * speedFactor;
         // vertical push depending on server
-        ball.vv = (to === "bot" ? 0.0009 : -0.0009) * speedFactor;
+        ball.vv = (to === "bot" ? 0.0011 : -0.0011) * speedFactor;
     }
 
-
-
-    // function showWin(winner) {
-    //     running = false;
-    //     overlay.style.display = "flex";
-    //     overlay.querySelector("h2").textContent = `${winner} won!`;
-    //     overlay.querySelector(
-    //         "p"
-    //     ).textContent = `Final score: You ${playerScore} — Bot ${botScore}`;
-    //     playerScore = botScore = 0;
-    //     updateScore();
-    // }
-
     // === Input ===
+
     function pointerToU(x) {
         const left = worldToScreen(0, player.v);
         const right = worldToScreen(1, player.v);
-        return Math.max(0, Math.min(1, (x - left.x) / (right.x - left.x)));
+        let u = (x - left.x) / (right.x - left.x);
+        return Math.max(0, Math.min(1, u * 1.1 - 0.05)); // faster response
     }
 
-    canvas.addEventListener("pointerdown", (e) => {
-        pointerDown = true;
-        player.u = lastPointerU = pointerToU(e.clientX);
+    // function pointerToU(x) {
+    //     const left = worldToScreen(0, player.v);
+    //     const right = worldToScreen(1, player.v);
+    //     return Math.max(0, Math.min(1, (x - left.x) / (right.x - left.x)));
+    // }
+    //
+    // canvas.addEventListener("pointerdown", (e) => {
+    //     pointerDown = true;
+    //     player.u = lastPointerU = pointerToU(e.clientX);
+    // });
+    // canvas.addEventListener("pointermove", (e) => {
+    //     if (!pointerDown) return;
+    //     const u = pointerToU(e.clientX);
+    //     spinBoost = (u - lastPointerU) * 0.075;
+    //     lastPointerU = u;
+    //     player.u = u;
+    // });
+    canvas.addEventListener("pointermove", (e) => {
+        if (e.clientY > window.innerHeight * 0.6) {
+            player.u = pointerToU(e.clientX);
+
+        }
     });
     canvas.addEventListener("pointermove", (e) => {
-        if (!pointerDown) return;
-        const u = pointerToU(e.clientX);
-        spinBoost = (u - lastPointerU) * 0.075;
-        lastPointerU = u;
-        player.u = u;
+        const targetU = pointerToU(e.clientX);
+        player.u = lerp(player.u, targetU, 0.25); // smooth follow
     });
+
+
+
     canvas.addEventListener("pointerup", () => (pointerDown = false));
     canvas.addEventListener("pointercancel", () => (pointerDown = false));
-
-    // window.addEventListener("keydown", (e) => {
-    //     if (e.key === "ArrowLeft") player.u = Math.max(0, player.u - 0.04);
-    //     if (e.key === "ArrowRight") player.u = Math.min(1, player.u + 0.04);
-    // });
     window.addEventListener("keydown", (e) => {
         if (e.key === "ArrowLeft") player.u = Math.max(0, player.u - 0.04);
         if (e.key === "ArrowRight") player.u = Math.min(1, player.u + 0.04);
@@ -650,7 +553,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // === Loop ===
     function loop(now) {
-        if (!running) return;
+        // if (!running) return;
         const dt = Math.min(40, now - last);
         last = now;
 
@@ -664,7 +567,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ball.u += ball.vu * dt;
         ball.v += ball.vv * dt;
 
-        // wallss
+        // walls
         if (ball.u < 0 || ball.u > 1) ball.vu *= -1;
 
         // collisions
@@ -710,28 +613,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // scoring
-        if (ball.v < -0.05) {
+        if (ball.v < bot.v - 0.08) { // player scores
             playerScore++;
             soundHandler.play("score");
-            updateScore();
-            checkRoundEnd();
+            // addXP(50);    // XP reward
+            // addCoins(10); // coins reward
             resetBall("bot");
-        } else if (ball.v > 1.05) {
+            updateProgressUI(); // ✅ refresh UI immediately
+
+        } else if (ball.v > player.v + 0.08) { // bot scores
             botScore++;
+
             soundHandler.play("score");
-            updateScore();
-            checkRoundEnd();
+            // addXP(20);    // smaller XP for playing
             resetBall("player");
+            updateProgressUI(); // ✅ refresh UI immediately
+
+        }
+        // === Check win/lose conditions ===
+        if (playerScore >= 7) {
+            const { earnedXP, earnedCoins } = grantRewards(true);
+            endLevel();
+            showEndOverlay(true, earnedXP, earnedCoins);
+            return;
+        }
+
+        if (botScore >= 7) {
+            const { earnedXP, earnedCoins } = grantRewards(false);
+            endLevel();
+            showEndOverlay(false, earnedXP, earnedCoins);
+            return;
         }
 
 
-        // if (ball.u < 0 || ball.u > 1) {
-        //     soundHandler.play("hitTable");
-        //     ball.vu *= -1;
-        // }
 
-
-        // draw
         ctx.clearRect(0, 0, width, height);
         const bg = ctx.createLinearGradient(0, 0, 0, height);
         bg.addColorStop(0, "#eeb030");
@@ -748,8 +663,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // radius should scale with perspective
         const baseRadius = Math.min(width, height) * 0.06; // tweak size
-        // const botRadius = baseRadius * botScreen.scale;
-        // const playerRadius = baseRadius * playerScreen.scale;
         const botRadius = baseRadius;
         const playerRadius = baseRadius;
         if (ball.v < player.v - 0.05) {
@@ -767,28 +680,317 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // === Start ===
-    startBtn.addEventListener("click", () => {
-        if (imagesLoaded < 2) {
-            alert("Game is still loading assets...");
-            return;
-        }
-        overlay.style.display = "none";
-        running = true;
-        resetBall("bot");
-        last = performance.now();
-        loop(last);
-    });
-
-
-    btnBack.addEventListener("click", () => (location.href = "/"));
-    btnExit.addEventListener("click", () => (location.href = "/"));
-
-    resetBall("bot");
-    updateScore();
+    // startBtn.addEventListener("click", () => {
+    //     if (imagesLoaded < 2) {
+    //         alert("Game is still loading assets...");
+    //         return;
+    //     }
+    //
+    //
+    //     overlay.style.display = "none";
+    //     running = true;
+    //     resetBall("bot");
+    //     last = performance.now();
+    //     loop(last);
+    // });
+    // function startGame() {
+    //     if (imagesLoaded < 2) {
+    //         console.log("⏳ Waiting for assets...");
+    //         return;
+    //     }
+    //     overlay.style.display = "none";
+    //     running = true;
+    //     resetBall("bot");
+    //     last = performance.now();
+    //     loop(last);
+    // }
+//
+// // auto-start once assets are loaded
+//     [playerImg, botImg].forEach(img => {
+//         img.onload = () => {
+//             imagesLoaded++;
+//             if (imagesLoaded === 2) startGame();
+//         };
+//     });
 
     // btnBack.addEventListener("click", () => (location.href = "/"));
     // btnExit.addEventListener("click", () => (location.href = "/"));
 
-    // resetBall("bot");
-    // updateScore();
+//     game progression
+    // === Player Progression ===
+    let playerXP = 0;
+    let playerLevel = 1;
+    let playerCoins = 0;
+
+// XP thresholds for each level
+    const xpNeeded = [0, 100, 250, 500, 1000]; // expand as needed
+
+    const xpEl = document.getElementById("xp-display");
+    const coinsEl = document.getElementById("coins-display");
+
+    function updateProgressUI() {
+        xpEl.textContent = `XP: ${playerXP} | Lvl: ${playerLevel}`;
+        coinsEl.textContent = `💰 ${playerCoins}`;
+        scoreEl.textContent = `Player: ${playerScore} | Bot: ${botScore}`;
+        const stageEl = document.getElementById("levelReached");
+        stageEl.textContent = `Category ${currentCategory} - Lvl ${currentLevel}`;
+    }
+
+    function addXP(amount, allowLevelUp = true) {
+        playerXP += amount;
+
+        // Check level up
+        if (allowLevelUp) {
+            if (playerLevel < xpNeeded.length - 1 && playerXP >= xpNeeded[playerLevel]) {
+                playerLevel = Math.max(1, playerLevel + 1);
+            }
+        }
+
+
+        updateProgressUI();
+        saveProgress(); // also persist to backend
+    }
+
+    function addCoins(amount) {
+        playerCoins += amount;
+        updateProgressUI();
+    }
+
+    // === Load saved progress from localStorage ===
+    async function loadProgress() {
+        try {
+            const res = await fetch("/api/progress");
+            if (!res.ok) throw new Error("Failed to load progress");
+            const data = await res.json();
+            playerXP = data.xp || 0;
+            playerLevel = data.level && data.level > 0 ? data.level : 1;
+            playerCoins = data.coins || 0;
+            currentCategory = data.category || 1;
+            currentLevel = data.stage || 1;
+
+            updateProgressUI();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function initProgress() {
+        await loadProgress();
+        updateProgressUI();
+    }
+
+    async function saveProgress() {
+        try {
+            await fetch("/api/progress", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    xp: playerXP,
+                    level: playerLevel,
+                    coins: playerCoins,
+                    category: currentCategory,
+                    stage: currentLevel
+                })
+            });
+        } catch (err) {
+            console.error("❌ Failed to save progress", err);
+        }
+    }
+
+    function showEndOverlay(win, earnedXP, earnedCoins) {
+        const endOverlay = document.getElementById("endOverlay");
+
+        const title = document.getElementById("endTitle");
+        const emoji = document.getElementById("endEmoji");
+        const nextBtn = document.getElementById("nextBtn");
+        const reviveBtn = document.getElementById("reviveBtn");
+
+        // Update stats
+        document.getElementById("earnedXP").textContent = earnedXP;
+        document.getElementById("earnedCoins").textContent = earnedCoins;
+        // document.getElementById("totalXP").textContent = playerXP;
+        // document.getElementById("totalCoins").textContent = playerCoins;
+        document.getElementById("levelReached").textContent = playerLevel;
+
+        if (win) {
+            title.textContent = "🎉 You Win!";
+            emoji.textContent = "😃";
+            reviveBtn.style.display = "none";
+            nextBtn.style.display = "inline-block";
+            nextBtn.onclick = () => {
+                unlockNextLevel();
+                endOverlay.classList.remove("active"); // ✅ hide overlay after button click
+                startLevel();
+            };
+        } else {
+            title.textContent = "Level Failed!";
+            emoji.textContent = "😟";
+            reviveBtn.style.display = "inline-block";
+            nextBtn.style.display = "none";
+
+            reviveBtn.onclick = () => {
+                endOverlay.classList.remove("active"); // ✅ hide overlay after revive
+                startLevel();
+            };
+        }
+
+        // ✅ Show overlay
+        endOverlay.classList.add("active");
+    }
+
+
+    document.getElementById("homeBtn").addEventListener("click", () => {
+        window.location.href = "/"; // go home
+    });
+    // let levelTime = 30; // seconds
+    // let levelXPGoal = 200; // target XP for win
+    // let levelTimerId = null;
+    const rewardRules = {
+        1: { winXP: 100, loseXP: 50, winCoins: 50, loseCoins: 25 },
+        2: { winXP: 120, loseXP: 60, winCoins: 60, loseCoins: 30 },
+        // Add more categories if needed
+    };
+    function grantRewards(win) {
+        const rules = rewardRules[currentCategory] || rewardRules[1];
+        let earnedXP, earnedCoins;
+
+        if (win) {
+            earnedXP = rules.winXP;
+            earnedCoins = rules.winCoins;
+            addXP(earnedXP); // allow level up
+
+
+        } else {
+            earnedXP = rules.loseXP;
+            earnedCoins = rules.loseCoins;
+            addXP(earnedXP, false); // XP adds, but no level up
+
+        }
+
+        addXP(earnedXP);
+        addCoins(earnedCoins);
+
+        saveProgress(); // ✅ persist changes
+
+        return { earnedXP, earnedCoins };
+    }
+
+
+
+    function startLevel() {
+        document.getElementById("progressBar").classList.remove("active");
+        scoreEl.classList.add("active");
+
+        // playerXP = 0;
+        // playerCoins = 0;
+        playerScore = 0;
+        botScore = 0;
+        updateProgressUI();
+
+        running = true;
+        resetBall("bot");
+        last = performance.now();
+
+
+
+        loop(performance.now());
+    }
+
+
+    function endLevel() {
+        running = false;
+        // if (levelTimerId) clearInterval(levelTimerId);
+            scoreEl.classList.remove("active");
+        document.getElementById("progressBar").classList.add("active");
+    }
+
+    const categories = 10;
+    const levelsPerCategory = 30;
+    let currentCategory = null;
+    let currentLevel = null;
+
+// Elements
+    const categoryOverlay = document.getElementById("categoryOverlay");
+    const categoryList = document.getElementById("categoryList");
+    const levelList = document.getElementById("levelList");
+    const skipCategoryBtn = document.getElementById("skipCategoryBtn");
+    skipCategoryBtn.addEventListener("click", () => {
+        categoryOverlay.classList.add("hidden"); // hide overlay
+        startLevel(); // just start the game
+    });
+// Build categories
+    for (let i = 1; i <= categories; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = `Category ${i}`;
+        btn.addEventListener("click", () => {
+            currentCategory = i;
+            renderLevels(i);
+        });
+        categoryList.appendChild(btn);
+    }
+
+    function renderLevels(category) {
+        levelList.innerHTML = "";
+        for (let i = 1; i <= levelsPerCategory; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = `Level ${i}`;
+            btn.addEventListener("click", () => {
+                currentLevel = i;
+                saveProgress();
+                categoryOverlay.classList.remove("active");
+                startLevel();
+            });
+            levelList.appendChild(btn);
+        }
+    }
+
+    // const categories = 10;
+    // const levelsPerCategory = 30;
+    //
+    // let currentCategory = 1;
+    // let currentLevel = 1;
+
+    function unlockNextLevel() {
+        currentLevel++;
+        // Optional: if you want to roll over to the next category
+        if (currentLevel > levelsPerCategory) {
+            currentLevel = 1;
+            currentCategory++;
+        }
+        saveProgress();
+        updateProgressUI();
+    }
+
+    const unlocks = {
+        1: { table: "classic", paddle: "default", ball: "white" },
+        2: { paddle: "neon", ball: "fire" },
+        3: { table: "space", paddle: "laser" },
+        // ... up to 10
+    };
+
+    function getUnlockedTheme(category) {
+        return unlocks[category] || unlocks[1];
+    }
+    const categoryIcon = document.getElementById("categoryIcon");
+
+    function showCategoryIcon() {
+        if (currentCategory && currentLevel) {
+            categoryIcon.textContent = currentCategory; // show just category number
+            categoryIcon.classList.remove("hidden");
+        }
+    }
+
+    categoryIcon.addEventListener("click", () => {
+        // re-open overlay so user sees category & level
+        categoryOverlay.classList.add("active");
+    });
+
+
+    sessionStorage.setItem("xp", playerXP);
+    sessionStorage.getItem("xp");
+
+    resetBall("bot");
+    initProgress();
+
+
 });
