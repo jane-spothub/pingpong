@@ -355,13 +355,10 @@ body, html {
     font-weight: bold;
     border: none;
     border-radius: 50px;
-    padding: 15px 30px;
+    padding: 15px 50px;
     cursor: pointer;
     box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap:10px;
+
     /* animation */
     animation: pulse 2s infinite ease-in-out;
     transition: transform 0.2s, background 0.2s;
