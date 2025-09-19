@@ -25,6 +25,30 @@ app.get("/", (req, res) => {
 app.get("/bot", (req, res) => {
     res.render("bot");
 });
+// New menu page routes
+app.get("/challenge", (req, res) => {
+    res.render("challenge");
+});
+
+app.get("/daily", (req, res) => {
+    res.render("daily");
+});
+
+app.get("/vip", (req, res) => {
+    res.render("vip");
+});
+
+// app.get("/upgrade", (req, res) => {
+//     res.render("upgrade");
+// });
+
+app.get("/level", (req, res) => {
+    res.render("level");
+});
+
+app.get("/settings", (req, res) => {
+    res.render("settings");
+});
 
 // Progress API
 app.use("/api", progressRoutes);

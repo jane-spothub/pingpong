@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Ping Pong - Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="home-body" >
@@ -23,34 +25,30 @@
 
         <!-- Left Menu -->
         <div class="side-menu left">
-            <div class="menu-btn">
-               <div class="menu-btn-icon">🏆 </div>
+            <a href="/challenge" class="menu-btn">
+                <div class="menu-btn-icon"><i class="fas fa-trophy"></i></div>
                 Challenge
-            </div>
-            <div class="menu-btn">
-                <div class="menu-btn-icon">🎁 </div>
+            </a>
+            <a href="/daily" class="menu-btn">
+                <div class="menu-btn-icon"><i class="fas fa-gift"></i></div>
                 Daily
-            </div>
-            <div class="menu-btn">
-                <div class="menu-btn-icon">💎</div>
-                Shop
-            </div>
+            </a>
+            <a href="/vip" class="menu-btn">
+                <div class="menu-btn-icon"><i class="fas fa-crown"></i></div>
+                VIP
+            </a>
         </div>
 
         <!-- Right Menu -->
         <div class="side-menu right">
-            <div class="menu-btn">
-              <div class="menu-btn-icon">🏓</div>
-                Upgrade
-            </div>
-            <div class="menu-btn">
-                <div class="menu-btn-icon">🎖️ </div>
+            <a href="/level" class="menu-btn">
+                <div class="menu-btn-icon"><i class="fas fa-medal"></i></div>
                 Level
-            </div>
-            <div class="menu-btn">
-                <div class="menu-btn-icon">⚙️</div>
+            </a>
+            <a href="/settings" class="menu-btn">
+                <div class="menu-btn-icon"><i class="fas fa-sliders-h"></i></div>
                 Settings
-            </div>
+            </a>
         </div>
 
         <!-- Progress Display -->
@@ -60,135 +58,23 @@
             <span id="coins-display">💰 0</span>
         </div>
 <!--        bottom pad-->
-        <a id="btnPlay" href="/bot"> PLAY </a>
+        <a href="/bot" id="btnPlay"> PLAY </a>
 
     </div>
 
 
 <div id="howToPlay" class="container how-to-play hidden">
     <h1>How to Play</h1>
-    <div class="steps">
-        <div class="step">
-            <span class="icon">🎮</span>
-            <p>Use <strong>Arrow Keys</strong> (or drag on mobile) to move your paddle left, right, forward, and backward.</p>
-        </div>
-        <div class="step">
-            <span class="icon">🏓</span>
-            <p>Hit the ball back across the table before it bounces past your side.</p>
-        </div>
-        <div class="step">
-            <span class="icon">⭐</span>
-            <p>First to <strong>3 points</strong> wins a round. Best of <strong>3 rounds</strong> wins the match.</p>
-        </div>
-        <div class="step">
-            <span class="icon">🤖</span>
-            <p>Choose a difficulty level to adjust the bot’s speed and skill.</p>
-        </div>
-    </div>
+
 
 <!--    <button id="btnPlayNow" class="btn big">Start Playing</button>-->
     <button id="btnBackHome" class="btn">Back to Home</button>
 </div>
 <script src="/js/paddlehome.js"></script>
 
-<script>
-    document.querySelector(".btn.how-to").addEventListener("click", () => {
-        document.querySelector("#main-content").classList.add("hidden");
-        document.querySelector("#howToPlay").classList.remove("hidden");
-    });
-
-
-    document.getElementById("btnBackHome").addEventListener("click", () => {
-        document.querySelector("#howToPlay").classList.add("hidden");
-        document.querySelector("#home").classList.remove("hidden");
-    });
-
-</script>
-<script>
-    async function fetchProgress() {
-        try {
-            const res = await fetch("/api/progress");
-            const data = await res.json();
-
-            // update UI
-            document.getElementById("xp-display").textContent = `💎: ${data.xp} | Lvl: ${data.level}`;
-            document.getElementById("coins-display").textContent = `💰 ${data.coins}`;
-        } catch (err) {
-            console.error("❌ Failed to fetch progress:", err);
-        }
-    }
-
-    // 🔹 fetch immediately when page loads
-    document.addEventListener("DOMContentLoaded", () => {
-        fetchProgress();
-
-        // 🔹 auto-refresh every 3s
-        setInterval(fetchProgress, 3000);
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const progressBar = document.getElementById("progress-bar");
-        const progressText = document.getElementById("progress-text");
-        const loader = document.getElementById("loader");
-        const mainContent = document.getElementById("main-content");
-
-        // 🔹 Assets to preload
-        const assets = [
-            "assets/img/player-paddle.png",
-            "assets/img/bot-paddle.png",
-            "assets/img/pingpong-poster.png",
-            "assets/audio/paddle-hit-ball.wav",
-            "assets/audio/ball-hit-table.wav",
-            "assets/audio/score.wav",
-            "assets/audio/win-sound.wav",
-            "assets/audio/lose.wav"
-        ];
-
-        let loaded = 0;
-
-        function updateProgress() {
-            loaded++;
-            const percent = Math.round((loaded / assets.length) * 100);
-            progressBar.style.width = percent + "%";
-            progressText.textContent = "Loading " + percent + "%";
-
-            if (loaded === assets.length) {
-                loader.classList.add("fade-out");
-                setTimeout(() => {
-                    loader.style.display = "none";
-                    mainContent.style.display = "block";
-                }, 800);
-            }
-        }
-
-        function preloadImage(src) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.onload = () => { updateProgress(); resolve(); };
-                img.onerror = () => { updateProgress(); resolve(); };
-                img.src = src;
-            });
-        }
-
-        function preloadAudio(src) {
-            return new Promise((resolve) => {
-                const audio = new Audio();
-                audio.oncanplaythrough = () => { updateProgress(); resolve(); };
-                audio.onerror = () => { updateProgress(); resolve(); };
-                audio.src = src;
-                audio.load();
-            });
-        }
-
-        // 🔹 Start preloading all
-        Promise.all(
-            assets.map(src =>
-                src.endsWith(".png") ? preloadImage(src) : preloadAudio(src)
-            )
-        ).then(() => console.log("✅ All assets preloaded"));
-    });
-</script>
+<script src="/js/howtobtns.js"></script>
+<script src="/js/fetchdata.js"></script>
+<script src="js/loader.js"></script>
 
 
 </body>

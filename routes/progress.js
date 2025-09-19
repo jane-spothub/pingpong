@@ -4,13 +4,8 @@ const router = express.Router();
 
 // Temporary in-memory storage (later replace with MongoDB)
 let userProgress = {
-    xp: 0,
-    level: 0,
-    coins: 0,
-    category: 1,
-    stage: 1
+    xp: 0, level: 1, coins: 0, category: 1, stage: 1
 };
-
 
 // GET progress
 router.get("/progress", (req, res) => {
@@ -24,8 +19,8 @@ router.post("/progress", (req, res) => {
     res.json({ success: true, progress: userProgress });
 });
 
-//
 export default router;
+
 //
 // import mongoose from "mongoose";
 //

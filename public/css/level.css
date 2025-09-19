@@ -1,0 +1,210 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.close-button {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.5rem;
+    text-decoration: none;
+    z-index: 100;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(253, 187, 45, 0.5);
+}
+
+.close-button:hover {
+    background: #fdbb2d;
+    color: #000;
+    transform: scale(1.1);
+}
+
+.menu-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #fdbb2d;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.level-progress {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.category-container {
+    margin-bottom: 30px;
+}
+
+.category-title {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #fdbb2d;
+    color: #fdbb2d;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.level-button {
+    aspect-ratio: 1/1;
+    border-radius: 15px;
+    border: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.level-button.available {
+    background: linear-gradient(145deg, #6a11cb, #2575fc);
+    color: white;
+}
+
+.level-button.available:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+
+.level-button.completed {
+    background: linear-gradient(145deg, #0f9b0f, #00b09b);
+    color: white;
+}
+
+.level-button.locked {
+    background: linear-gradient(145deg, #555, #333);
+    color: #999;
+    cursor: not-allowed;
+}
+
+.level-number {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.level-status {
+    font-size: 0.8rem;
+}
+
+.level-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.9rem;
+}
+
+.back-button {
+    display: block;
+    text-align: center;
+    padding: 15px;
+    background: rgba(253, 187, 45, 0.2);
+    color: #fdbb2d;
+    border: 1px solid #fdbb2d;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 20px auto;
+    max-width: 200px;
+    transition: all 0.3s;
+}
+
+.back-button:hover {
+    background: #fdbb2d;
+    color: #000;
+}
+
+/* Category colors */
+.category-1 .category-title { color: #4ecdc4; border-color: #4ecdc4; }
+.category-2 .category-title { color: #ff6b6b; border-color: #ff6b6b; }
+.category-3 .category-title { color: #ffd166; border-color: #ffd166; }
+.category-4 .category-title { color: #06d6a0; border-color: #06d6a0; }
+.category-5 .category-title { color: #118ab2; border-color: #118ab2; }
+.category-6 .category-title { color: #ef476f; border-color: #ef476f; }
+.category-7 .category-title { color: #9c89b8; border-color: #9c89b8; }
+.category-8 .category-title { color: #fca311; border-color: #fca311; }
+.category-9 .category-title { color: #e63946; border-color: #e63946; }
+.category-10 .category-title { color: #a8dadc; border-color: #a8dadc; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .levels-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 12px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .category-title {
+        font-size: 1.5rem;
+    }
+    .close-button {
+        top: 20px;
+        right: 20px;
+        width: 35px;
+        height: 35px;
+        font-size: 1.3rem;
+    }
+    .close-button {
+        top: 15px;
+        right: 15px;
+        width: 30px;
+        height: 30px;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .levels-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 10px;
+    }
+
+    .level-number {
+        font-size: 1.3rem;
+    }
+}

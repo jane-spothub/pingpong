@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Ping Pong</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.5rem;
+            text-decoration: none;
+            z-index: 100;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(253, 187, 45, 0.5);
+        }
+
+        .close-button:hover {
+            background: #fdbb2d;
+            color: #000;
+            transform: scale(1.1);
+        }
+
+        .menu-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #fdbb2d;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            padding-top: 10px;
+        }
+
+        .settings-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #fdbb2d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 1.3rem;
+        }
+
+        .instructions {
+            line-height: 1.6;
+        }
+
+        .instructions p {
+            margin-bottom: 15px;
+        }
+
+        .key-container {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .key {
+            padding: 5px 12px;
+            background: #fdbb2d;
+            color: #000;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 15px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .sound-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .sound-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sound-icon {
+            font-size: 1.5rem;
+            color: #fdbb2d;
+            width: 30px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #fdbb2d;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .volume-slider {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            height: 8px;
+            background: #555;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fdbb2d;
+            cursor: pointer;
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .option-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .option-icon {
+            font-size: 1.5rem;
+            color: #fdbb2d;
+            width: 30px;
+        }
+
+        select {
+            padding: 8px 15px;
+            border-radius: 5px;
+            background: #333;
+            color: white;
+            border: 1px solid #fdbb2d;
+            outline: none;
+        }
+
+        .back-button {
+            display: block;
+            text-align: center;
+            padding: 15px;
+            background: rgba(253, 187, 45, 0.2);
+            color: #fdbb2d;
+            border: 1px solid #fdbb2d;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 20px auto;
+            max-width: 200px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #fdbb2d;
+            color: #000;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .menu-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .close-button {
+                top: 20px;
+                right: 20px;
+                width: 35px;
+                height: 35px;
+                font-size: 1.3rem;
+            }
+
+            .section-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .close-button {
+                top: 15px;
+                right: 15px;
+                width: 30px;
+                height: 30px;
+                font-size: 1.1rem;
+            }
+
+            .sound-control, .settings-option {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .volume-control {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Close button (X) at the top right -->
+<a href="/" class="close-button">&times;</a>
+
+<div class="menu-container">
+    <h1>Game Settings</h1>
+
+    <!-- How to Play Section -->
+    <div class="settings-section">
+        <h2 class="section-title">
+            <i class="fas fa-question-circle"></i> How to Play
+        </h2>
+        <div class="instructions">
+            <p>Control your paddle and hit the ball back to your opponent. Score points when your opponent misses the ball.</p>
+            <div class="steps">
+                <div class="key-container">
+                    <span class="key">🎮</span>
+                    <p>Use <strong>Arrow Keys</strong> (or drag on mobile) to move your paddle left, right, forward, and backward.</p>
+                </div>
+                <div class="key-container">
+                    <span class="key">🏓</span>
+                    <p>Hit the ball back across the table before it bounces past your side.</p>
+                </div>
+                <div class="key-container">
+                    <span class="key">⭐</span>
+                    <p>First to <strong>3 points</strong> wins a round. Best of <strong>3 rounds</strong> wins the match.</p>
+                </div>
+<!--                <div class="key-container">-->
+<!--                    <span class="key">🤖</span>-->
+<!--                    <p>Choose a difficulty level to adjust the bot’s speed and skill.</p>-->
+<!--                </div>-->
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Game Sounds Section -->
+    <div class="settings-section">
+        <h2 class="section-title">
+            <i class="fas fa-volume-up"></i> Game Sounds
+        </h2>
+
+        <div class="sound-control">
+            <div class="sound-info">
+                <div class="sound-icon">
+                    <i class="fas fa-volume-mute"></i>
+                </div>
+                <div>Master Sound</div>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="sound-control">
+            <div class="sound-info">
+                <div class="sound-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <div>Background Music</div>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="volume-control">
+            <div class="sound-icon">
+                <i class="fas fa-volume-up"></i>
+            </div>
+            <input type="range" class="volume-slider" min="0" max="100" value="80">
+            <span>80%</span>
+        </div>
+
+        <div class="sound-control">
+            <div class="sound-info">
+                <div class="sound-icon">
+                    <i class="fas fa-baseball-ball"></i>
+                </div>
+                <div>Ball Sounds</div>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="sound-control">
+            <div class="sound-info">
+                <div class="sound-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div>Victory Sounds</div>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Additional Settings Section -->
+    <div class="settings-section">
+        <h2 class="section-title">
+            <i class="fas fa-cog"></i> Game Settings
+        </h2>
+
+        <div class="settings-option">
+            <div class="option-info">
+                <div class="option-icon">
+                    <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <div>Game Difficulty</div>
+            </div>
+            <select>
+                <option>Easy</option>
+                <option selected>Medium</option>
+                <option>Hard</option>
+                <option>Expert</option>
+            </select>
+        </div>
+
+        <div class="settings-option">
+            <div class="option-info">
+                <div class="option-icon">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <div>Ball Color</div>
+            </div>
+            <select>
+                <option>White</option>
+                <option selected>Yellow</option>
+                <option>Red</option>
+                <option>Green</option>
+                <option>Blue</option>
+            </select>
+        </div>
+
+        <div class="settings-option">
+            <div class="option-info">
+                <div class="option-icon">
+                    <i class="fas fa-border-style"></i>
+                </div>
+                <div>Paddle Size</div>
+            </div>
+            <select>
+                <option>Small</option>
+                <option selected>Medium</option>
+                <option>Large</option>
+            </select>
+        </div>
+
+        <div class="settings-option">
+            <div class="option-info">
+                <div class="option-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div>Visual Effects</div>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <a href="/" class="back-button">Back to Home</a>
+</div>
+
+<script>
+    // Functionality for volume slider
+    const volumeSlider = document.querySelector('.volume-slider');
+    const volumeValue = volumeSlider.nextElementSibling;
+
+    volumeSlider.addEventListener('input', function() {
+        volumeValue.textContent = this.value + '%';
+    });
+
+    // Add toggle functionality to all switches
+    document.querySelectorAll('.toggle-switch input').forEach(switchInput => {
+        switchInput.addEventListener('change', function() {
+            // Add any additional functionality when toggling switches
+            console.log('Switch toggled:', this.checked);
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Levels - Ping Pong</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .close-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.5rem;
+            text-decoration: none;
+            z-index: 100;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(253, 187, 45, 0.5);
+        }
+
+        .close-button:hover {
+            background: #fdbb2d;
+            color: #000;
+            transform: scale(1.1);
+        }
+
+        .menu-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #fdbb2d;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            padding-top: 10px;
+        }
+
+        .level-progress {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            background: rgba(253, 187, 45, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(253, 187, 45, 0.3);
+        }
+
+        .categories-wrapper {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .categories-tabs {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .categories-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-tab {
+            flex: 0 0 auto;
+            padding: 12px 20px;
+            margin-right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .category-tab.active {
+            background: rgba(253, 187, 45, 0.2);
+            border-color: #fdbb2d;
+            transform: scale(1.05);
+        }
+
+        .category-tab i {
+            margin-right: 8px;
+        }
+
+        .category-container {
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .category-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #fdbb2d;
+            color: #fdbb2d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .level-button {
+            aspect-ratio: 1/1;
+            border-radius: 15px;
+            border: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(0);
+        }
+
+        .level-button.available {
+            background: linear-gradient(145deg, #6a11cb, #2575fc);
+            color: white;
+        }
+
+        .level-button.available:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .level-button.completed {
+            background: linear-gradient(145deg, #0f9b0f, #00b09b);
+            color: white;
+        }
+
+        .level-button.locked {
+            background: linear-gradient(145deg, #555, #333);
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .level-number {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .level-status {
+            font-size: 0.8rem;
+        }
+
+        .level-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 0.9rem;
+        }
+
+        .back-button {
+            display: block;
+            text-align: center;
+            padding: 15px;
+            background: rgba(253, 187, 45, 0.2);
+            color: #fdbb2d;
+            border: 1px solid #fdbb2d;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 20px auto;
+            max-width: 200px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #fdbb2d;
+            color: #000;
+        }
+
+        /* Category colors */
+        .category-1 .category-title {
+            color: #4ecdc4;
+            border-color: #4ecdc4;
+        }
+
+        .category-2 .category-title {
+            color: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+
+        .category-3 .category-title {
+            color: #ffd166;
+            border-color: #ffd166;
+        }
+
+        .category-4 .category-title {
+            color: #06d6a0;
+            border-color: #06d6a0;
+        }
+
+        .category-5 .category-title {
+            color: #118ab2;
+            border-color: #118ab2;
+        }
+
+        .category-6 .category-title {
+            color: #ef476f;
+            border-color: #ef476f;
+        }
+
+        .category-7 .category-title {
+            color: #9c89b8;
+            border-color: #9c89b8;
+        }
+
+        .category-8 .category-title {
+            color: #fca311;
+            border-color: #fca311;
+        }
+
+        .category-9 .category-title {
+            color: #e63946;
+            border-color: #e63946;
+        }
+
+        .category-10 .category-title {
+            color: #a8dadc;
+            border-color: #a8dadc;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Level completion indicator */
+        .completion-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #fdbb2d;
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .levels-grid {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+                gap: 12px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .category-title {
+                font-size: 1.5rem;
+            }
+
+            .close-button {
+                top: 15px;
+                right: 15px;
+                width: 35px;
+                height: 35px;
+                font-size: 1.3rem;
+            }
+
+            .categories-tabs {
+                padding-bottom: 5px;
+            }
+
+            .category-tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .levels-grid {
+                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+                gap: 10px;
+            }
+
+            .level-number {
+                font-size: 1.3rem;
+            }
+
+            .close-button {
+                top: 10px;
+                right: 10px;
+                width: 30px;
+                height: 30px;
+                font-size: 1.1rem;
+            }
+
+            .category-tab {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<a href="/" class="close-button">&times;</a>
+
+<div class="menu-container">
+    <h1>Game Levels</h1>
+
+    <div class="level-progress">
+        Category <span id="current-category">1</span> - Level <span id="current-level">1</span>
+    </div>
+
+    <div class="categories-wrapper">
+        <div class="categories-tabs" id="categories-tabs">
+            <!-- Category tabs will be generated here -->
+        </div>
+    </div>
+
+    <div id="categories-container">
+        <!-- Categories will be dynamically generated here -->
+    </div>
+
+    <a href="/" class="back-button">Back to Home</a>
+</div>
+
+<script>
+    const categoryNames = [
+        "Rookie Rally",
+        "Spin Masters",
+        "Power Play",
+        "Precision Pros",
+        "Speed Demons",
+        "Tactical Titans",
+        "Elite Champions",
+        "Ultimate Showdown",
+        "Legendary League",
+        "Hall of Fame"
+    ];
+
+    const categoryIcons = [
+        "fa-table-tennis-paddle-ball",
+        "fa-spinner",
+        "fa-bolt",
+        "fa-bullseye",
+        "fa-gauge-high",
+        "fa-chess",
+        "fa-trophy",
+        "fa-fire",
+        "fa-crown",
+        "fa-medal"
+    ];
+
+    const LEVELS_PER_CATEGORY = 30;
+    let userProgress = {
+        xp: 0,
+        level: 1,
+        coins: 0,
+        category: 1,
+        stage: 1
+    };
+
+    let currentSelectedCategory = 1;
+
+    // Fetch user progress from API
+    async function loadUserProgress() {
+        try {
+            const response = await fetch('/api/progress');
+            if (response.ok) {
+                const data = await response.json();
+                console.log("API Data:", data);
+
+                userProgress = data;
+
+                // Determine the correct current level display
+                let currentCategory, currentLevel, globalStage;
+
+                if (data.hasOwnProperty('stage') && data.hasOwnProperty('category')) {
+                    currentCategory = data.category;
+                    currentLevel = data.stage;
+                    globalStage = (currentCategory - 1) * LEVELS_PER_CATEGORY + currentLevel;
+                } else if (data.hasOwnProperty('stage')) {
+                    globalStage = data.stage;
+                    currentCategory = Math.floor((globalStage - 1) / LEVELS_PER_CATEGORY) + 1;
+                    currentLevel = ((globalStage - 1) % LEVELS_PER_CATEGORY) + 1;
+                } else {
+                    currentCategory = 1;
+                    currentLevel = 1;
+                    globalStage = 1;
+                }
+
+                updateUI(currentCategory, currentLevel, globalStage);
+            } else {
+                throw new Error('API response not OK');
+            }
+        } catch (error) {
+            console.error('Error loading progress:', error);
+            updateUI(1, 1, 1);
+        }
+    }
+
+    // Update the UI based on user progress
+    function updateUI(currentCategory, currentLevel, globalStage) {
+        // Update current progress display
+        document.getElementById('current-category').textContent = currentCategory;
+        document.getElementById('current-level').textContent = currentLevel;
+
+        // Generate category tabs
+        const categoriesTabs = document.getElementById('categories-tabs');
+        categoriesTabs.innerHTML = '';
+
+        for (let i = 1; i <= 10; i++) {
+            const tab = document.createElement('div');
+            tab.className = `category-tab ${i === currentCategory ? 'active' : ''}`;
+            tab.innerHTML = `<i class="fas ${categoryIcons[i - 1]}"></i> ${i}`;
+            tab.onclick = () => switchCategory(i);
+            categoriesTabs.appendChild(tab);
+        }
+
+        // Generate categories and levels
+        const categoriesContainer = document.getElementById('categories-container');
+        categoriesContainer.innerHTML = '';
+
+        for (let i = 1; i <= 10; i++) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = `category-container category-${i} ${i === currentCategory ? 'active' : ''}`;
+            categoryDiv.id = `category-${i}`;
+
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'category-title';
+            titleDiv.innerHTML = `<i class="fas ${categoryIcons[i - 1]}"></i> ${i}. ${categoryNames[i - 1]}`;
+
+            const levelsGrid = document.createElement('div');
+            levelsGrid.className = 'levels-grid';
+
+            // Calculate completed levels in this category
+            let completedInCategory = 0;
+
+            for (let j = 1; j <= LEVELS_PER_CATEGORY; j++) {
+                const levelNumber = (i - 1) * LEVELS_PER_CATEGORY + j;
+                const levelButton = document.createElement('button');
+                levelButton.className = 'level-button';
+
+                // Determine if level is available, completed, or locked
+                if (levelNumber < globalStage) {
+                    // Level is completed
+                    levelButton.classList.add('completed');
+                    levelButton.innerHTML = `
+                            <div class="level-number">${j}</div>
+                            <div class="level-status">Completed</div>
+                            <div class="level-icon"><i class="fas fa-check"></i></div>
+                        `;
+                    levelButton.onclick = () => startLevel(i, j);
+                    completedInCategory++;
+                } else if (levelNumber === globalStage) {
+                    // Current level
+                    levelButton.classList.add('available');
+                    levelButton.innerHTML = `
+                            <div class="level-number">${j}</div>
+                            <div class="level-status">Play Now!</div>
+                        `;
+                    if (i === currentCategory && j === currentLevel) {
+                        levelButton.classList.add('pulse');
+                    }
+                    levelButton.onclick = () => startLevel(i, j);
+                } else {
+                    // Locked level
+                    levelButton.classList.add('locked');
+                    levelButton.innerHTML = `
+                            <div class="level-number">${j}</div>
+                            <div class="level-status">Locked</div>
+                            <div class="level-icon"><i class="fas fa-lock"></i></div>
+                        `;
+                    levelButton.onclick = null;
+                }
+
+                levelsGrid.appendChild(levelButton);
+            }
+
+            // Add completion badge to category title if not all levels completed
+            if (completedInCategory > 0 && completedInCategory < LEVELS_PER_CATEGORY) {
+                const badge = document.createElement('span');
+                badge.className = 'completion-badge';
+                badge.textContent = `${completedInCategory}/${LEVELS_PER_CATEGORY}`;
+                titleDiv.appendChild(badge);
+            }
+
+            categoryDiv.appendChild(titleDiv);
+            categoryDiv.appendChild(levelsGrid);
+            categoriesContainer.appendChild(categoryDiv);
+        }
+
+        currentSelectedCategory = currentCategory;
+    }
+
+    // Switch between categories
+    function switchCategory(categoryId) {
+        // Update tabs
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`.category-tab:nth-child(${categoryId})`).classList.add('active');
+
+        // Update category visibility
+        document.querySelectorAll('.category-container').forEach(container => {
+            container.classList.remove('active');
+        });
+        document.getElementById(`category-${categoryId}`).classList.add('active');
+
+        currentSelectedCategory = categoryId;
+
+        // Scroll to top of category
+        document.getElementById(`category-${categoryId}`).scrollIntoView({behavior: 'smooth'});
+    }
+
+    // Start a level
+    function startLevel(category, level) {
+        // Calculate global level number
+        const globalLevel = (category - 1) * LEVELS_PER_CATEGORY + level;
+
+        // Show a confirmation message
+        // const playNow = confirm(`Start ${categoryNames[category-1]} - Level ${level}?`);
+
+        // if (playNow) {
+        // Update user progress
+        userProgress.category = category;
+        userProgress.stage = level;
+
+        // Save progress
+        saveProgress();
+
+        // Redirect to bot game page with level parameters
+        window.location.href = `/bot?category=${category}&level=${level}`;
+        // }
+    }
+
+    // Save progress to API
+    async function saveProgress() {
+        try {
+            const response = await fetch('/api/progress', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userProgress)
+            });
+
+            if (!response.ok) {
+                throw new Error('API save failed');
+            }
+
+            console.log("Progress saved successfully");
+        } catch (error) {
+            console.error('Error saving progress:', error);
+        }
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+        loadUserProgress();
+
+        // Refresh progress when page becomes visible
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) {
+                loadUserProgress();
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Rewards - Ping Pong</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/daily.css">
+
+</head>
+<body>
+<div class="menu-container">
+    <div class="header">
+        <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <h1>🎁 Daily Rewards</h1>
+        <p class="subtitle">Login daily to claim amazing rewards!</p>
+
+        <div class="login-streak">
+            <i class="fas fa-fire flame-icon"></i>
+            <span class="streak-text">Current streak: </span>
+            <span class="streak-count">5 days</span>
+        </div>
+    </div>
+
+    <div class="reward-calendar">
+        <!-- Day 1 -->
+        <div class="reward-day claimed">
+            <div class="day-number">Day 1</div>
+            <div class="reward-icon">💰</div>
+            <div class="reward-amount">25</div>
+            <div class="reward-type">Coins</div>
+        </div>
+
+        <!-- Day 2 -->
+        <div class="reward-day claimed">
+            <div class="day-number">Day 2</div>
+            <div class="reward-icon">⭐</div>
+            <div class="reward-amount">50</div>
+            <div class="reward-type">XP</div>
+        </div>
+
+        <!-- Day 3 -->
+        <div class="reward-day claimed">
+            <div class="day-number">Day 3</div>
+            <div class="reward-icon">💰</div>
+            <div class="reward-amount">50</div>
+            <div class="reward-type">Coins</div>
+        </div>
+
+        <!-- Day 4 -->
+        <div class="reward-day claimed">
+            <div class="day-number">Day 4</div>
+            <div class="reward-icon">🎨</div>
+            <div class="reward-amount">1</div>
+            <div class="reward-type">Paddle Skin</div>
+        </div>
+
+        <!-- Day 5 -->
+        <div class="reward-day claimed">
+            <div class="day-number">Day 5</div>
+            <div class="reward-icon">💰</div>
+            <div class="reward-amount">75</div>
+            <div class="reward-type">Coins</div>
+        </div>
+
+        <!-- Day 6 -->
+        <div class="reward-day available">
+            <div class="day-number">Day 6</div>
+            <div class="reward-icon">⭐</div>
+            <div class="reward-amount">100</div>
+            <div class="reward-type">XP</div>
+        </div>
+
+        <!-- Day 7 -->
+        <div class="reward-day future">
+            <div class="day-number">Day 7</div>
+            <div class="reward-icon">🎁</div>
+            <div class="reward-amount">Mystery</div>
+            <div class="reward-type">Box</div>
+        </div>
+    </div>
+
+    <div class="claim-container">
+        <button class="btn-claim" id="claimButton">Claim Daily Reward (Day 6)</button>
+    </div>
+
+    <a href="/" class="back-button">Back to Home</a>
+</div>
+
+<div class="notification" id="rewardNotification">
+    <i class="fas fa-gift notification-icon"></i>
+    <div>Reward claimed: 100 XP!</div>
+</div>
+
+<script src="/js/daily.js">
+
+</script>
+</body>
+</html>

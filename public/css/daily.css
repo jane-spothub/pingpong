@@ -1,0 +1,259 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.menu-container {
+    max-width: 500px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.back-btn {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 24px;
+    text-decoration: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.3s;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.subtitle {
+    color: #fdbb2d;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.login-streak {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+}
+
+.flame-icon {
+    color: #fdbb2d;
+    font-size: 24px;
+    margin-right: 10px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.streak-count {
+    font-weight: bold;
+    font-size: 20px;
+    color: #fdbb2d;
+}
+
+.reward-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.reward-day {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px 5px;
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s, background 0.3s;
+    cursor: pointer;
+}
+
+.reward-day.claimed {
+    background: rgba(76, 175, 80, 0.3);
+    border: 2px solid #4CAF50;
+}
+
+.reward-day.available {
+    background: rgba(253, 187, 45, 0.3);
+    border: 2px solid #fdbb2d;
+    animation: glow 2s infinite;
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 5px #fdbb2d; }
+    50% { box-shadow: 0 0 20px #fdbb2d; }
+    100% { box-shadow: 0 0 5px #fdbb2d; }
+}
+
+.reward-day.future {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.day-number {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.reward-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reward-amount {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.reward-type {
+    font-size: 10px;
+    opacity: 0.8;
+    margin-top: 2px;
+}
+
+.claim-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.btn-claim {
+    background: linear-gradient(to right, #fdbb2d, #ff5e62);
+    border: none;
+    border-radius: 25px;
+    padding: 15px 30px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.3s;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 300px;
+}
+
+.btn-claim:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+.btn-claim:disabled {
+    background: rgba(255, 255, 255, 0.2);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.back-button {
+    display: block;
+    text-align: center;
+    background: rgba(255, 0, 0, 0.3);
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.back-button:hover {
+    background: rgba(255, 0, 0, 0.5);
+    border-color: white;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transform: translateX(100%);
+    transition: transform 0.3s ease-out;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-icon {
+    margin-right: 10px;
+    font-size: 24px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+    .reward-calendar {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .reward-day {
+        padding: 10px 3px;
+    }
+
+    .reward-icon {
+        font-size: 20px;
+        height: 30px;
+    }
+}

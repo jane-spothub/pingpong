@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenges - Ping Pong</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/challenges.css">
+
+</head>
+<body>
+<div class="container">
+    <header>
+        <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <h1>Ping Pong Challenges</h1>
+        <p class="subtitle">Complete tasks to earn rewards and level up!</p>
+    </header>
+
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-value">1,250</div>
+            <div class="stat-label">XP</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">350</div>
+            <div class="stat-label">Coins</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Level</div>
+        </div>
+    </div>
+
+    <div class="challenges-container">
+        <div class="challenge-category">
+            <div class="category-title">
+                <div class="category-icon"><i class="fas fa-fire"></i></div>
+                <h2>Daily Challenges</h2>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="challenge-details">
+                    <div class="challenge-title">Marathon Player</div>
+                    <div class="challenge-desc">Spend 10 minutes playing ping pong</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 65%; background: #FF5252;"></div>
+                    </div>
+                    <div class="challenge-reward">
+                        <span class="reward-icon"><i class="fas fa-star" style="color: #fdbb2d;"></i></span>
+                        <span>50 XP</span>
+                        <span class="reward-icon" style="margin-left: 10px;"><i class="fas fa-coins" style="color: gold;"></i></span>
+                        <span>25 Coins</span>
+                    </div>
+                </div>
+                <button class="btn-claim" disabled>Claim</button>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="challenge-details">
+                    <div class="challenge-title">First Win of the Day</div>
+                    <div class="challenge-desc">Win a match today</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 100%; background: #4CAF50;"></div>
+                    </div>
+                    <div class="challenge-reward">
+                        <span class="reward-icon"><i class="fas fa-star" style="color: #fdbb2d;"></i></span>
+                        <span>75 XP</span>
+                        <span class="reward-icon" style="margin-left: 10px;"><i class="fas fa-coins" style="color: gold;"></i></span>
+                        <span>35 Coins</span>
+                    </div>
+                </div>
+                <button class="btn-claim">Claim</button>
+            </div>
+        </div>
+
+        <div class="challenge-category">
+            <div class="category-title">
+                <div class="category-icon"><i class="fas fa-medal"></i></div>
+                <h2>Progression Challenges</h2>
+            </div>
+
+            <div class="challenge-card completed">
+                <div class="challenge-icon">
+                    <i class="fas fa-level-up-alt"></i>
+                </div>
+                <div class="challenge-details">
+                    <div class="challenge-title">Rising Star</div>
+                    <div class="challenge-desc">Reach Level 2</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 100%; background: #4CAF50;"></div>
+                    </div>
+                    <div class="challenge-reward">
+                        <span class="reward-icon"><i class="fas fa-star" style="color: #fdbb2d;"></i></span>
+                        <span>100 XP</span>
+                        <span class="reward-icon" style="margin-left: 10px;"><i class="fas fa-coins" style="color: gold;"></i></span>
+                        <span>50 Coins</span>
+                    </div>
+                </div>
+                <button class="btn-claim" disabled>Claimed</button>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-icon">
+                    <i class="fas fa-level-up-alt"></i>
+                </div>
+                <div class="challenge-details">
+                    <div class="challenge-title">Ping Pong Expert</div>
+                    <div class="challenge-desc">Reach Level 5</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 60%; background: #2196F3;"></div>
+                    </div>
+                    <div class="challenge-reward">
+                        <span class="reward-icon"><i class="fas fa-star" style="color: #fdbb2d;"></i></span>
+                        <span>250 XP</span>
+                        <span class="reward-icon" style="margin-left: 10px;"><i class="fas fa-coins" style="color: gold;"></i></span>
+                        <span>100 Coins</span>
+                    </div>
+                </div>
+                <button class="btn-claim" disabled>Claim</button>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="challenge-details">
+                    <div class="challenge-title">Ping Pong Master</div>
+                    <div class="challenge-desc">Reach Level 10</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 30%; background: #9C27B0;"></div>
+                    </div>
+                    <div class="challenge-reward">
+                        <span class="reward-icon"><i class="fas fa-star" style="color: #fdbb2d;"></i></span>
+                        <span>500 XP</span>
+                        <span class="reward-icon" style="margin-left: 10px;"><i class="fas fa-coins" style="color: gold;"></i></span>
+                        <span>200 Coins</span>
+                    </div>
+                </div>
+                <button class="btn-claim" disabled>Claim</button>
+            </div>
+        </div>
+
+        <div class="challenge-category">
+            <div class="category-title">
+                <div class="category-icon"><i class="fas fa-bullseye"></i></div>
+                <h2>Skill Challenges</h2>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-icon">
+                    <i class="fas fa-crosshairs"></i>
+                </div>
+                <div class="challenge-details">
+                    <div class="challenge-title">Precision Hitter</div>
+                    <div class="challenge-desc">Win 10 points with corner shots</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 40%; background: #FF5252;"></div>
+                    </div>
+                    <div class="challenge-reward">
+                        <span class="reward-icon"><i class="fas fa-star" style="color: #fdbb2d;"></i></span>
+                        <span>150 XP</span>
+                        <span class="reward-icon" style="margin-left: 10px;"><i class="fas fa-coins" style="color: gold;"></i></span>
+                        <span>75 Coins</span>
+                    </div>
+                </div>
+                <button class="btn-claim" disabled>Claim</button>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="challenge-details">
+                    <div class="challenge-title">Defensive Wall</div>
+                    <div class="challenge-desc">Block 20 powerful shots</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 15%; background: #2196F3;"></div>
+                    </div>
+                    <div class="challenge-reward">
+                        <span class="reward-icon"><i class="fas fa-star" style="color: #fdbb2d;"></i></span>
+                        <span>200 XP</span>
+                        <span class="reward-icon" style="margin-left: 10px;"><i class="fas fa-coins" style="color: gold;"></i></span>
+                        <span>90 Coins</span>
+                    </div>
+                </div>
+                <button class="btn-claim" disabled>Claim</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="notification" id="rewardNotification">
+    <i class="fas fa-check-circle"></i> Reward claimed: +75 XP & +35 Coins!
+</div>
+
+<script src="/js/challenge.js">
+
+</script>
+</body>
+</html>
