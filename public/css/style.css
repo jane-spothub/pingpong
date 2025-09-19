@@ -112,10 +112,13 @@ body, html {
     max-height: 100%;
     display: block;
     background:#000000;
+    touch-action: none;
     /*background-size: 400% 400%;*/
     /*animation: bgAnimation 15s ease infinite;*/
 }
-
+canvas{
+    touch-action: none;
+}
 /* subtle slow gradient movement for a dynamic feel */
 @keyframes bgAnimation {
     0% { background-position: 0% 50%; }

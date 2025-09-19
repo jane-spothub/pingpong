@@ -690,22 +690,49 @@ document.addEventListener("DOMContentLoaded", () => {
     //     player.u = u;
     // });
 
+    // let pointerActive = false;
+// Add this inside your game initialization
+
+// Handle touch movement
+    canvas.addEventListener("touchmove", function(e) {
+        e.preventDefault(); // Prevent scrolling
+        let touch = e.touches[0];
+        let rect = canvas.getBoundingClientRect();
+        let x = touch.clientX - rect.left;
+
+        // // Center paddle on finger
+        // paddleX = x - paddleWidth / 2;
+        //
+        // // Keep paddle inside screen
+        // if (paddleX < 0) paddleX = 0;
+        // if (paddleX + paddleWidth > canvas.width) {
+        //     paddleX = canvas.width - paddleWidth;
+        // }
+    }, { passive: false });
+
     canvas.addEventListener("pointerdown", (e) => {
-        // Only allow control in bottom 40% of screen
-        if (e.clientY > window.innerHeight * 0.6) {
-            pointerActive = true;
-            player.u = pointerToU(e.clientX);
-        }
+        e.preventDefault(); // stop page scroll/zoom
+        pointerActive = true;
+        player.u = pointerToU(e.clientX);
     });
 
     canvas.addEventListener("pointermove", (e) => {
         if (!pointerActive) return;
+        e.preventDefault();
         const targetU = pointerToU(e.clientX);
-        player.u = lerp(player.u, targetU, 0.3); // smooth follow for touch
+        // Smooth follow for touch/mouse
+        player.u = lerp(player.u, targetU, 0.9);
     });
 
-    canvas.addEventListener("pointerup", () => (pointerActive = false));
-    canvas.addEventListener("pointercancel", () => (pointerActive = false));
+    canvas.addEventListener("pointerup", (e) => {
+        e.preventDefault();
+        pointerActive = false;
+    });
+
+    canvas.addEventListener("pointercancel", (e) => {
+        e.preventDefault();
+        pointerActive = false;
+    });
 
 
     // let pointerDown = false
