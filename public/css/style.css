@@ -8,7 +8,9 @@ body {
 }
 
 .home-body {
-    background: linear-gradient(135deg,#eeb030, #ffaa00, #eeb030);
+    /*bg.addColorStop(0, "");*/
+    /*bg.addColorStop(1, "#120017");*/
+    background: linear-gradient(135deg,#b28aff, #2e003a, #b28aff);
     background-size: 400% 400%;
     animation: bgAnimation 15s ease infinite;
 }
