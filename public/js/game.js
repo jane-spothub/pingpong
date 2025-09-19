@@ -689,16 +689,24 @@ document.addEventListener("DOMContentLoaded", () => {
     //     lastPointerU = u;
     //     player.u = u;
     // });
-    canvas.addEventListener("pointermove", (e) => {
-        if (e.clientY > window.innerHeight * 0.6) {
-            player.u = pointerToU(e.clientX);
 
+    canvas.addEventListener("pointerdown", (e) => {
+        // Only allow control in bottom 40% of screen
+        if (e.clientY > window.innerHeight * 0.6) {
+            pointerActive = true;
+            player.u = pointerToU(e.clientX);
         }
     });
+
     canvas.addEventListener("pointermove", (e) => {
+        if (!pointerActive) return;
         const targetU = pointerToU(e.clientX);
-        player.u = lerp(player.u, targetU, 0.25); // smooth follow
+        player.u = lerp(player.u, targetU, 0.3); // smooth follow for touch
     });
+
+    canvas.addEventListener("pointerup", () => (pointerActive = false));
+    canvas.addEventListener("pointercancel", () => (pointerActive = false));
+
 
     // let pointerDown = false
     // canvas.addEventListener("pointerup", () => (pointerDown = false));
