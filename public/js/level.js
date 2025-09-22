@@ -32,6 +32,57 @@ let userProgress = {
     category: 1,
     stage: 1
 };
+
+// Add this near the top of your backend file, after the users object
+const XP_LEVELS = [
+    0,    // Level 1: 0 XP
+    100,  // Level 2: 100 XP
+    250,  // Level 3: 250 XP
+    500,  // Level 4: 500 XP
+    1000, // Level 5: 1000 XP
+    2000, // Level 6: 2000 XP
+    3500, // Level 7: 3500 XP
+    5000, // Level 8: 5000 XP
+    7000, // Level 9: 7000 XP
+    10000 // Level 10: 10000 XP
+    // Add more levels as needed
+];
+
+// Helper function to calculate level based on XP
+function calculateLevel(xp) {
+    for (let i = XP_LEVELS.length - 1; i >= 0; i--) {
+        if (xp >= XP_LEVELS[i]) {
+            return i + 1;
+        }
+    }
+    return 1;
+}
+
+// Helper function to update user level based on XP
+function updateUserLevel(user) {
+    const newLevel = calculateLevel(user.xp);
+
+    // Check if level increased
+    if (newLevel > user.level) {
+        user.level = newLevel;
+
+        // Check if level-based challenges are completed
+        const level2Challenge = user.challenges.find(c => c.id === "level_2");
+        const level5Challenge = user.challenges.find(c => c.id === "level_5");
+
+        if (level2Challenge && user.level >= 2 && !level2Challenge.completed) {
+            level2Challenge.completed = true;
+        }
+
+        if (level5Challenge && user.level >= 5 && !level5Challenge.completed) {
+            level5Challenge.completed = true;
+        }
+
+        return true; // Level increased
+    }
+
+    return false; // Level didn't change
+}
 // Manual sync function
 async function syncLevels() {
     try {
@@ -55,11 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Also try syncing after a short delay
     setTimeout(syncLevels, 1000);
 });
+const username = localStorage.getItem("username");
+
 
 // Fetch user progress from API
 async function loadUserProgress() {
     try {
-        const response = await fetch('/api/progress');
+        const response = await fetch(`/api/progress/${username}`);
         if (response.ok) {
             const data = await response.json();
             console.log("API Data:", data); // Debugging
@@ -189,7 +242,7 @@ function startLevel(category, level) {
 async function saveProgress() {
     try {
         // Try to save in the format your API expects
-        const response = await fetch('/api/progress', {
+        const response = await fetch(`/api/progress/${username}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

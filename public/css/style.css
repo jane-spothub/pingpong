@@ -515,3 +515,51 @@ a{
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+
+/* Fullscreen overlay */
+#usernameOverlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(10, 15, 30, 0.85);
+    z-index: 2000;
+}
+
+#usernameOverlay .overlay-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08));
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+#usernameOverlay input {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+}
+
+#usernameOverlay button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    color: #fff;
+    transition: transform 0.2s;
+}
+
+#usernameOverlay button:hover {
+    transform: scale(1.05);
+}

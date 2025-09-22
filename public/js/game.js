@@ -18,6 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const ctx = canvas.getContext("2d");
     const soundHandler = new SoundHandler();
     const scoreEl = document.getElementById("score-display");
+    let matchesPlayed = 0;
+    let matchesWon = 0;
+    let totalPlayTime = 0; // in seconds
+    let matchStartTime = 0;
+
 
     // Extract category and level from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -39,7 +44,66 @@ document.addEventListener("DOMContentLoaded", () => {
     botImg.src = "assets/img/bot-paddle.png";
 
     // let imagesLoaded = 0;
+    async function recordMatchCompletion(win) {
+        matchesPlayed++;
+        if (win) matchesWon++;
 
+        const matchDuration = Math.floor((performance.now() - matchStartTime) / 1000);
+        totalPlayTime += matchDuration;
+
+        try {
+            // Send match data to backend
+            const response = await fetch('/api/match/complete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: localStorage.getItem('username') || 'guest',
+                    win: win,
+                    duration: matchDuration,
+                    category: currentCategory,
+                    level: currentLevel,
+                    score: { player: playerScore, bot: botScore },
+                    timestamp: new Date().toISOString()
+                })
+            });
+
+            const data = await response.json();
+            console.log('Match recorded:', data);
+
+            // Update challenges based on match completion
+            updateChallengesAfterMatch(win, matchDuration);
+
+        } catch (error) {
+            console.error('Failed to record match:', error);
+        }
+    }
+// Add this function to update challenges
+    function updateChallengesAfterMatch(win, duration) {
+        // Update "First Win of the Day" challenge if applicable
+        if (win) {
+            // This would typically be handled by the backend, but we can update UI
+            const firstWinChallenge = challenges.find(c => c.id === 'first_win');
+            if (firstWinChallenge && !firstWinChallenge.completed) {
+                firstWinChallenge.progress = 100;
+                firstWinChallenge.claimable = true;
+            }
+        }
+
+        // Update "Marathon Player" challenge (time spent playing)
+        const marathonChallenge = challenges.find(c => c.id === 'marathon');
+        if (marathonChallenge) {
+            // Convert total play time from seconds to minutes
+            const totalMinutes = Math.floor(totalPlayTime / 60);
+            const progress = Math.min(100, (totalMinutes / 10) * 100); // 10 minute goal
+            marathonChallenge.progress = progress;
+            marathonChallenge.claimable = progress >= 100;
+
+            // Update UI if challenge panel is open
+            if (document.getElementById('challengesContainer')) {
+                renderChallenges();
+            }
+        }
+    }
     // === Paddle Controls ===
     function pointerToU(x) {
         const left = worldToScreen(0, player.v);
@@ -109,8 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function lerp(a, b, t) {
         return a + (b - a) * t;
     }
-    // const player = {u: 0.5, v: 0.80, w: 0.25, z: 0.1}; // push player below bottom edge
-    // const bot    = {u: 0.5, v: -0.15, w: 0.25, z: 0.1}; // push bot above top edge
+
 // Player near bottom edge
     const player= {u: 0.5, v: 0.72, w: 0.25, z: 0.1};
 
@@ -127,98 +190,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let running = false;
     let last = performance.now();
     let spinBoost = 0;
-    // const colors = ["#8d6e63", "#a1887f", "#8d6e63", "#a1887f"]; // natural wood tones
 
     // Physics constants
     const gravity = -0.00005;
     const bounceFactor = 0.7;
-    // let plankColors = [];
-
-    // function generateFloorPlanks() {
-    //     const plankHeight = 70;
-    //     plankColors = [];
-    //     for (let y = height / 2; y < height; y += plankHeight) {
-    //         plankColors.push(colors[Math.floor(Math.random() * colors.length)]);
-    //     }
-    // }
-
-    // 🎨 Fun arcade colors for kids + adults
-//     const funColors = [
-//         // "#ff6f61", // coral red
-//         "rgba(255,174,0,0.28)", // bright yellow
-//         // "#66bb6a", // playful green
-//         // "#ffcc00", // bright yellow
-//
-//         // "#42a5f5", // sky blue
-//         // "#ab47bc", // purple
-//         // "#ff8a65", // orange
-//     ];
-//
-// // Generate fun planks
-//     function generateFloorPlanks() {
-//         const plankHeight = 70;
-//         plankColors = [];
-//         for (let y = height / 2; y < height; y += plankHeight) {
-//             plankColors.push(funColors[Math.floor(Math.random() * funColors.length)]);
-//         }
-//     }
-//
-//     function drawWoodFloor() {
-//         const plankHeight = 70;
-//         if (plankColors.length === 0) generateFloorPlanks();
-//
-//         let i = 0;
-//         for (let y = height / 2; y < height; y += plankHeight) {
-//             ctx.fillStyle = plankColors[i++ % plankColors.length];
-//
-//             // main plank
-//             ctx.fillRect(0, y, width, plankHeight);
-//
-//             // shiny cartoon highlight
-//             const grad = ctx.createLinearGradient(0, y, 0, y + plankHeight);
-//             grad.addColorStop(0, "rgba(255,255,255,0.25)");
-//             grad.addColorStop(0.5, "transparent");
-//             ctx.fillStyle = grad;
-//             ctx.fillRect(0, y, width, plankHeight);
-//
-//             // black outline for cartoon feel
-//             ctx.strokeStyle = "rgba(0,0,0,0.3)";
-//             ctx.strokeRect(0, y, width, plankHeight);
-//         }
-//     }
-//
-//     function drawWoodWalls() {
-//         const plankWidth = 80; // width of each vertical plank
-//
-//         // Make sure we have colors
-//         if (plankColors.length === 0) generateFloorPlanks();
-//
-//         let i = 0;
-//         for (let x = 0; x < width; x += plankWidth) {
-//             ctx.fillStyle = plankColors[i % plankColors.length];
-//             ctx.fillRect(x, 0, plankWidth, height / 2); // vertical planks from top to halfway
-//
-//             // Grain line between planks
-//             ctx.strokeStyle = "rgba(0,0,0,0.1)";
-//             ctx.beginPath();
-//             ctx.moveTo(x, 0);
-//             ctx.lineTo(x, height / 2);
-//             ctx.stroke();
-//
-//             i++;
-//         }
-//
-//         // Add a soft shadow at the bottom of the wall (for depth)
-//         // Add a soft shadow at the bottom of the wall (for depth)
-//         const grad = ctx.createLinearGradient(0, height / 2, 0, height / 2 + 80);
-//         grad.addColorStop(0, "rgba(0,0,0,0.5)"); // dark at wall bottom
-//         grad.addColorStop(1, "rgba(0,0,0,0)");   // fade into floor
-//         ctx.fillStyle = grad;
-//         ctx.fillRect(0, height / 2, width, 80);
-//
-//     }
-//
-
 
 
     // === Enhanced Drawing Functions ===
@@ -1003,6 +978,7 @@ document.addEventListener("DOMContentLoaded", () => {
         resetBall("bot");
         last = performance.now();
 
+        matchStartTime = performance.now();
 
         loop(performance.now());
     }
@@ -1013,6 +989,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // if (levelTimerId) clearInterval(levelTimerId);
         scoreEl.classList.remove("active");
         document.getElementById("progressBar").classList.add("active");
+
+        const win = playerScore > botScore;
+        recordMatchCompletion(win);
     }
 
     const categories = 10;

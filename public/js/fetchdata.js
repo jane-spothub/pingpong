@@ -1,6 +1,8 @@
+const username = localStorage.getItem("username");
+
 async function fetchProgress() {
     try {
-        const res = await fetch("/api/progress");
+        const res = await fetch(`/api/progress/${username}`);
         const data = await res.json();
 
         // update UI
