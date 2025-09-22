@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let totalPlayTime = 0; // in seconds
     let matchStartTime = 0;
 
-
     // Extract category and level from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     let currentCategory = parseInt(urlParams.get('category')) || 1;
@@ -121,22 +120,84 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // === Enhanced Paddle Controls ===
+    // let pointerActive = false;
+    let lastPointerX = 0;
+    let lastPointerY = 0;
+
+// Enhanced pointer movement detection for 2D control
+    canvas.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        pointerActive = true;
+        lastPointerX = e.clientX;
+        lastPointerY = e.clientY;
+
+        // Initial position setting
+        const targetU = pointerToU(e.clientX);
+        const targetV = pointerToV(e.clientY);
+        player.u = targetU;
+        player.v = targetV;
+    });
+
     canvas.addEventListener("pointermove", (e) => {
         if (!pointerActive) return;
+        e.preventDefault();
+
+        const deltaX = e.clientX - lastPointerX;
+        const deltaY = e.clientY - lastPointerY;
+
+        // Update last position
+        lastPointerX = e.clientX;
+        lastPointerY = e.clientY;
+
+        // Calculate movement sensitivity
+        const sensitivity = 0.002;
+
+        // Horizontal movement (left/right)
         const targetU = pointerToU(e.clientX);
-        player.u = lerp(player.u, targetU, 0.35);
+        player.u = lerp(player.u, targetU, 0.5);
+
+        // Vertical movement (forward/backward) - only for player
+        player.v += deltaY * sensitivity;
+
+        // Constrain player vertical movement within bounds
+        player.v = Math.max(0.6, Math.min(0.95, player.v));
     });
 
-    canvas.addEventListener("pointerup", () => (pointerActive = false));
-    canvas.addEventListener("pointercancel", () => (pointerActive = false));
+    canvas.addEventListener("pointerup", (e) => {
+        e.preventDefault();
+        pointerActive = false;
+    });
 
-    // Keyboard (desktop) - Added forward/backward movement
+    canvas.addEventListener("pointercancel", (e) => {
+        e.preventDefault();
+        pointerActive = false;
+    });
+
+// Enhanced keyboard controls for precise movement
+    const keys = {};
     window.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowLeft") player.u = Math.max(0, player.u - 0.04);
-        if (e.key === "ArrowRight") player.u = Math.min(1, player.u + 0.04);
-        if (e.key === "ArrowUp") player.v = Math.max(0.7, player.v - 0.02);   // Move forward
-        if (e.key === "ArrowDown") player.v = Math.min(0.95, player.v + 0.02); // Move backward
+        keys[e.key] = true;
+
+        // Prevent arrow keys from scrolling the page
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+            e.preventDefault();
+        }
     });
+
+    window.addEventListener("keyup", (e) => {
+        keys[e.key] = false;
+    });
+    // canvas.addEventListener("pointerup", () => (pointerActive = false));
+    // canvas.addEventListener("pointercancel", () => (pointerActive = false));
+    //
+    // // Keyboard (desktop) - Added forward/backward movement
+    // window.addEventListener("keydown", (e) => {
+    //     if (e.key === "ArrowLeft") player.u = Math.max(0, player.u - 0.04);
+    //     if (e.key === "ArrowRight") player.u = Math.min(1, player.u + 0.04);
+    //     if (e.key === "ArrowUp") player.v = Math.max(0.7, player.v - 0.02);   // Move forward
+    //     if (e.key === "ArrowDown") player.v = Math.min(0.95, player.v + 0.02); // Move backward
+    // });
 
     Promise.all([
         new Promise(res => playerImg.onload = res),
@@ -353,11 +414,11 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillStyle = grad;
         ctx.fill();
 
-        // Ball highlight
-        ctx.beginPath();
-        ctx.arc(p.x - r / 4, p.y - (ball.z - 0.1) * 300 - r / 4, r / 3, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-        ctx.fill();
+        // // Ball highlight
+        // ctx.beginPath();
+        // ctx.arc(p.x - r / 4, p.y - (ball.z - 0.1) * 300 - r / 4, r / 3, 0, Math.PI * 2);
+        // ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+        // ctx.fill();
 
         ctx.strokeStyle = "#aaa";
         ctx.lineWidth = 1;
@@ -461,10 +522,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function resetBall(to = "player") {
         if (to === "bot") {
             ball.u = bot.u;
-            ball.v = bot.v + 0.06;  // serve slightly below bot
+            ball.v = bot.v + 0.06;
         } else {
             ball.u = player.u;
-            ball.v = player.v - 0.06; // serve slightly above player
+            ball.v = player.v - 0.06;
         }
 
         // Adjust difficulty based on category and level
@@ -485,14 +546,17 @@ document.addEventListener("DOMContentLoaded", () => {
             botSpeed = 0.00055;
         }
 
-        // random horizontal push
+        // Reset ball physics
         ball.vu = (Math.random() - 0.5) * 0.0012 * speedFactor;
-        // vertical push depending on server
         ball.vv = (to === "bot" ? 0.0011 : -0.0011) * speedFactor;
-
-        // Reset ball height and velocity
         ball.z = 0.2;
         ball.vz = 0;
+
+        // Reset player and bot to default positions
+        player.u = 0.5;
+        player.v = 0.72;
+        bot.u = 0.5;
+        bot.v = -0.40;
     }
 
     function hitPaddle(paddle) {
@@ -502,36 +566,128 @@ document.addEventListener("DOMContentLoaded", () => {
         return dist < 0.06 && Math.abs(ball.z - paddle.z) < 0.05;
     }
 
+//     // === Enhanced Main Game Loop ===
+//     function loop(now) {
+//         const dt = Math.min(40, now - last);
+//         last = now;
+//
+//         // Clear canvas with a subtle court background
+//         const bg = ctx.createLinearGradient(0, 0, 0, height);
+//         bg.addColorStop(0, "#b28aff");
+//         bg.addColorStop(1, "#120017");
+//         ctx.fillStyle = bg;
+//         ctx.fillRect(0, 0, width, height);
+// // Draw wooden room background
+// //         drawWoodFloor();
+//         // drawWoodWalls();
+//         // Draw table & elements
+//         drawTable();
+//
+//         // // Draw paddles
+//         const p = worldToScreen(player.u, player.v);
+//         drawPaddle(ctx, p.x, p.y, Math.min(width, height) * 0.05, "#e74c3c", false, true);
+//
+//         const b = worldToScreen(bot.u, bot.v);
+//         drawPaddle(ctx, b.x, b.y, Math.min(width, height) * 0.05, "#3498db", true, true);
+// // Player paddle (normal size)
+// //         const p = worldToScreen(player.u, player.v);
+// //         drawPaddle(ctx, p.x, p.y, Math.min(width, height) * 0.05, "#e74c3c", false, true);
+// //
+// // // Bot paddle (smaller size)
+// //         const b = worldToScreen(bot.u, bot.v);
+// //         drawPaddle(ctx, b.x, b.y, Math.min(width, height) * 0.035, "#3498db", true, true);
+//
+//         // Draw ball
+//         drawBall();
+//
+//         // Update game state
+//         updateBall(dt);
+//
+//         // Enhanced bot AI with predictive movement
+//         const speed = botSpeed * dt;
+//         const predictU = ball.u + (ball.vu * 10); // Simple prediction
+//         if (bot.u < predictU - 0.02) bot.u += speed * 1.2;
+//         if (bot.u > predictU + 0.02) bot.u -= speed * 1.2;
+//
+//         // Move ball
+//         ball.u += ball.vu * dt;
+//         ball.v += ball.vv * dt;
+//
+//         // Player hit with enhanced physics
+//         if (hitPaddle(player) && ball.vv > 0) {
+//             // soundHandler.play("hitPaddle");
+//             ball.vv = -Math.abs(ball.vv) - 0.00005;
+//             ball.vu += (ball.u - player.u) * 0.02 + spinBoost; // More spin influence
+//             ball.v = player.v - 0.03;
+//             ball.vz = 0.002; // Add upward velocity
+//         }
+//
+//         // Bot hit
+//         if (hitPaddle(bot) && ball.vv < 0) {
+//             // soundHandler.play("hitPaddle");
+//             ball.vv = Math.abs(ball.vv) + 0.00005;
+//             ball.vu += (ball.u - bot.u) * 0.015;
+//             ball.v = bot.v + 0.03;
+//             ball.vz = 0.002; // Add upward velocity
+//         }
+//
+//         // Scoring
+//         if (ball.v < bot.v - 0.08) {
+//             playerScore++;
+//             soundHandler.play("score");
+//             resetBall("bot");
+//             updateProgressUI();
+//         } else if (ball.v > player.v + 0.08) {
+//             botScore++;
+//             soundHandler.play("score");
+//             resetBall("bot");
+//             updateProgressUI();
+//         }
+//
+//         // Check win/lose conditions
+//         if (playerScore >= 7) {
+//             const {earnedXP, earnedCoins} = grantRewards(true);
+//             endLevel();
+//             showEndOverlay(true, earnedXP, earnedCoins);
+//             return;
+//         }
+//
+//         if (botScore >= 7) {
+//             const {earnedXP, earnedCoins} = grantRewards(false);
+//             endLevel();
+//             showEndOverlay(false, earnedXP, earnedCoins);
+//             return;
+//         }
+//
+//         requestAnimationFrame(loop);
+//     }
     // === Enhanced Main Game Loop ===
     function loop(now) {
         const dt = Math.min(40, now - last);
         last = now;
 
-        // Clear canvas with a subtle court background
+        // Clear canvas
         const bg = ctx.createLinearGradient(0, 0, 0, height);
         bg.addColorStop(0, "#b28aff");
         bg.addColorStop(1, "#120017");
         ctx.fillStyle = bg;
         ctx.fillRect(0, 0, width, height);
-// Draw wooden room background
-//         drawWoodFloor();
-        // drawWoodWalls();
+
         // Draw table & elements
         drawTable();
 
-        // // Draw paddles
+        // Update keyboard-controlled player movement
+        updatePlayerFromKeyboard(dt);
+
+        // Update bot movement with 2D control
+        updateBotMovement(dt);
+
+        // Draw paddles
         const p = worldToScreen(player.u, player.v);
         drawPaddle(ctx, p.x, p.y, Math.min(width, height) * 0.05, "#e74c3c", false, true);
 
         const b = worldToScreen(bot.u, bot.v);
         drawPaddle(ctx, b.x, b.y, Math.min(width, height) * 0.05, "#3498db", true, true);
-// Player paddle (normal size)
-//         const p = worldToScreen(player.u, player.v);
-//         drawPaddle(ctx, p.x, p.y, Math.min(width, height) * 0.05, "#e74c3c", false, true);
-//
-// // Bot paddle (smaller size)
-//         const b = worldToScreen(bot.u, bot.v);
-//         drawPaddle(ctx, b.x, b.y, Math.min(width, height) * 0.035, "#3498db", true, true);
 
         // Draw ball
         drawBall();
@@ -539,32 +695,26 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update game state
         updateBall(dt);
 
-        // Enhanced bot AI with predictive movement
-        const speed = botSpeed * dt;
-        const predictU = ball.u + (ball.vu * 10); // Simple prediction
-        if (bot.u < predictU - 0.02) bot.u += speed * 1.2;
-        if (bot.u > predictU + 0.02) bot.u -= speed * 1.2;
-
         // Move ball
         ball.u += ball.vu * dt;
         ball.v += ball.vv * dt;
 
         // Player hit with enhanced physics
         if (hitPaddle(player) && ball.vv > 0) {
-            // soundHandler.play("hitPaddle");
+            soundHandler.play("hitPaddle");
             ball.vv = -Math.abs(ball.vv) - 0.00005;
-            ball.vu += (ball.u - player.u) * 0.02 + spinBoost; // More spin influence
+            ball.vu += (ball.u - player.u) * 0.02 + spinBoost;
             ball.v = player.v - 0.03;
-            ball.vz = 0.002; // Add upward velocity
+            ball.vz = 0.002;
         }
 
         // Bot hit
         if (hitPaddle(bot) && ball.vv < 0) {
-            // soundHandler.play("hitPaddle");
+            soundHandler.play("hitPaddle");
             ball.vv = Math.abs(ball.vv) + 0.00005;
             ball.vu += (ball.u - bot.u) * 0.015;
             ball.v = bot.v + 0.03;
-            ball.vz = 0.002; // Add upward velocity
+            ball.vz = 0.002;
         }
 
         // Scoring
@@ -596,6 +746,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         requestAnimationFrame(loop);
+    }
+
+// Add this function for keyboard movement
+    function updatePlayerFromKeyboard(dt) {
+        const moveSpeed = 0.04 * dt;
+        const verticalMoveSpeed = 0.02 * dt;
+
+        if (keys["ArrowLeft"]) player.u = Math.max(0, player.u - moveSpeed);
+        if (keys["ArrowRight"]) player.u = Math.min(1, player.u + moveSpeed);
+        if (keys["ArrowUp"]) player.v = Math.max(0.6, player.v - verticalMoveSpeed);
+        if (keys["ArrowDown"]) player.v = Math.min(0.95, player.v + verticalMoveSpeed);
     }
 
     // ... (rest of your code remains the same, including player progression, rewards, etc.)
@@ -640,50 +801,83 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // === Input ===
 
-    function pointerToU(x) {
-        const left = worldToScreen(0, player.v);
-        const right = worldToScreen(1, player.v);
-        let u = (x - left.x) / (right.x - left.x);
-        return Math.max(0, Math.min(1, u * 1.1 - 0.05)); // faster response
+    function updateBotMovement(dt) {
+        const speed = botSpeed * dt;
+        const verticalSpeed = botSpeed * dt * 0.5; // Slower vertical movement
+
+        // Predictive ball tracking
+        const predictU = ball.u + (ball.vu * 15);
+        const predictV = ball.v + (ball.vv * 10);
+
+        // Horizontal movement (left/right)
+        if (bot.u < predictU - 0.02) bot.u += speed * 1.2;
+        if (bot.u > predictU + 0.02) bot.u -= speed * 1.2;
+
+        // Vertical movement (forward/backward) - bot tries to maintain optimal position
+        const optimalV = -0.35; // Base position
+        const reactionDistance = 0.15;
+
+        // Move forward when ball is coming, backward when it's going away
+        if (ball.vv < 0 && ball.v < bot.v + reactionDistance) {
+            // Ball coming toward bot - move forward slightly
+            if (bot.v > optimalV - 0.1) bot.v -= verticalSpeed * 0.8;
+        } else if (ball.vv > 0 && ball.v > bot.v) {
+            // Ball going away - move backward to center
+            if (bot.v < optimalV + 0.1) bot.v += verticalSpeed * 0.5;
+        } else {
+            // Return to optimal position
+            if (bot.v < optimalV) bot.v += verticalSpeed * 0.3;
+            if (bot.v > optimalV) bot.v -= verticalSpeed * 0.3;
+        }
+
+        // Constrain bot vertical movement
+        bot.v = Math.max(-0.5, Math.min(-0.2, bot.v));
     }
 
-    // function pointerToU(x) {
-    //     const left = worldToScreen(0, player.v);
-    //     const right = worldToScreen(1, player.v);
-    //     return Math.max(0, Math.min(1, (x - left.x) / (right.x - left.x)));
-    // }
-    //
-    // canvas.addEventListener("pointerdown", (e) => {
-    //     pointerDown = true;
-    //     player.u = lastPointerU = pointerToU(e.clientX);
-    // });
-    // canvas.addEventListener("pointermove", (e) => {
-    //     if (!pointerDown) return;
-    //     const u = pointerToU(e.clientX);
-    //     spinBoost = (u - lastPointerU) * 0.075;
-    //     lastPointerU = u;
-    //     player.u = u;
-    // });
+// Helper function for vertical pointer conversion
+    function pointerToV(y) {
+        const top = worldToScreen(0.5, -0.5).y;    // Top of playable area
+        const bottom = worldToScreen(0.5, 1.0).y;  // Bottom of playable area
+        const normalizedY = (y - top) / (bottom - top);
+        return Math.max(-0.5, Math.min(1.0, normalizedY * 1.5 - 0.5));
+    }
+// Enhanced touch controls for mobile devices
+    canvas.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        if (e.touches.length > 0) {
+            pointerActive = true;
+            lastPointerX = e.touches[0].clientX;
+            lastPointerY = e.touches[0].clientY;
+        }
+    });
 
-    // let pointerActive = false;
-// Add this inside your game initialization
+    canvas.addEventListener("touchmove", (e) => {
+        if (!pointerActive || e.touches.length === 0) return;
+        e.preventDefault();
 
-// Handle touch movement
-    canvas.addEventListener("touchmove", function(e) {
-        e.preventDefault(); // Prevent scrolling
-        let touch = e.touches[0];
-        let rect = canvas.getBoundingClientRect();
-        let x = touch.clientX - rect.left;
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - lastPointerX;
+        const deltaY = touch.clientY - lastPointerY;
 
-        // // Center paddle on finger
-        // paddleX = x - paddleWidth / 2;
-        //
-        // // Keep paddle inside screen
-        // if (paddleX < 0) paddleX = 0;
-        // if (paddleX + paddleWidth > canvas.width) {
-        //     paddleX = canvas.width - paddleWidth;
-        // }
-    }, { passive: false });
+        lastPointerX = touch.clientX;
+        lastPointerY = touch.clientY;
+
+        // More sensitive touch controls
+        const touchSensitivity = 0.003;
+
+        // Horizontal movement
+        const targetU = pointerToU(touch.clientX);
+        player.u = lerp(player.u, targetU, 0.7);
+
+        // Vertical movement
+        player.v += deltaY * touchSensitivity;
+        player.v = Math.max(0.6, Math.min(0.95, player.v));
+    });
+
+    canvas.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        pointerActive = false;
+    });
 
     canvas.addEventListener("pointerdown", (e) => {
         e.preventDefault(); // stop page scroll/zoom
@@ -710,56 +904,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    // let pointerDown = false
-    // canvas.addEventListener("pointerup", () => (pointerDown = false));
-    // canvas.addEventListener("pointercancel", () => (pointerDown = false));
-    // window.addEventListener("keydown", (e) => {
-    //     if (e.key === "ArrowLeft") player.u = Math.max(0, player.u - 0.04);
-    //     if (e.key === "ArrowRight") player.u = Math.min(1, player.u + 0.04);
-    //     if (e.key === "ArrowUp") player.v = Math.max(0.7, player.v - 0.02);   // forward
-    //     if (e.key === "ArrowDown") player.v = Math.min(0.95, player.v + 0.02); // backward
-    // });
-
-
-
-    // === Start ===
-    // startBtn.addEventListener("click", () => {
-    //     if (imagesLoaded < 2) {
-    //         alert("Game is still loading assets...");
-    //         return;
-    //     }
-    //
-    //
-    //     overlay.style.display = "none";
-    //     running = true;
-    //     resetBall("bot");
-    //     last = performance.now();
-    //     loop(last);
-    // });
-    // function startGame() {
-    //     if (imagesLoaded < 2) {
-    //         console.log("⏳ Waiting for assets...");
-    //         return;
-    //     }
-    //     overlay.style.display = "none";
-    //     running = true;
-    //     resetBall("bot");
-    //     last = performance.now();
-    //     loop(last);
-    // }
-//
-// // auto-start once assets are loaded
-//     [playerImg, botImg].forEach(img => {
-//         img.onload = () => {
-//             imagesLoaded++;
-//             if (imagesLoaded === 2) startGame();
-//         };
-//     });
-
-    // btnBack.addEventListener("click", () => (location.href = "/"));
-    // btnExit.addEventListener("click", () => (location.href = "/"));
-
-//     game progression
     // === Player Progression ===
     let playerXP = 0;
     let playerLevel = 1;
@@ -1097,12 +1241,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const categoryIcon = document.getElementById("categoryIcon");
 
-    // function showCategoryIcon() {
-    //     if (currentCategory && currentLevel) {
-    //         categoryIcon.textContent = currentCategory; // show just category number
-    //         categoryIcon.classList.remove("hidden");
-    //     }
-    // }
+
 
     categoryIcon.addEventListener("click", () => {
         // re-open overlay so user sees category & level
