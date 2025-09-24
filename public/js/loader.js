@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ✅ Add a Continue button
     const continueBtn = document.createElement("button");
-    continueBtn.textContent = "Let’s Go!";
+    continueBtn.textContent = "Tap to Start";
     continueBtn.id = "continueBtn";
     continueBtn.style.display = "none"; // hidden until loaded
     continueBtn.style.marginTop = "20px";
@@ -15,7 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
     continueBtn.style.cursor = "pointer";
     continueBtn.style.borderRadius = "10px";
     continueBtn.style.border = "none";
-    continueBtn.style.background = "orange"
+    continueBtn.style.background = "linear-gradient(135deg, #89CFF0, #7DF9FF)";
+    continueBtn.style.color = "#000"; // make text readable
+    continueBtn.style.fontWeight = "bold";
     document.querySelector(".loader-content").appendChild(continueBtn);
 
     // 🔹 Assets to preload
