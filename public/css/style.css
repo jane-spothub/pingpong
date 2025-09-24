@@ -526,10 +526,16 @@ align-items: center;
     100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 15px rgba(255, 127, 80, 0.6); }
 }
 
+.play-btn-container{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
 #btnPlay {
     position: absolute;
     bottom: 100px;
-    left: 50%;
+    /*left: 50%;*/
     transform: translateX(-50%);
     background: linear-gradient(135deg, #ff7f50, #ff4500);
     color: #fff;
@@ -630,8 +636,11 @@ a{
     100% { background-position: 0% 50%; }
 }
 
+.username-overlay.hidden{
+    display: none;
+}
 /* Fullscreen overlay */
-#usernameOverlay {
+.username-overlay.active {
     position: fixed;
     inset: 0;
     display: flex;
@@ -641,7 +650,7 @@ a{
     z-index: 2000;
 }
 
-#usernameOverlay .overlay-card {
+.username-overlay .overlay-card {
     background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08));
     backdrop-filter: blur(12px);
     border-radius: 20px;
@@ -652,7 +661,7 @@ a{
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 
-#usernameOverlay input {
+.username-overlay input {
     width: 100%;
     padding: 12px;
     margin: 15px 0;
@@ -662,7 +671,7 @@ a{
     outline: none;
 }
 
-#usernameOverlay button {
+.username-overlay button {
     padding: 12px 20px;
     border: none;
     border-radius: 12px;
@@ -674,6 +683,6 @@ a{
     transition: transform 0.2s;
 }
 
-#usernameOverlay button:hover {
+.username-overlay button:hover {
     transform: scale(1.05);
 }

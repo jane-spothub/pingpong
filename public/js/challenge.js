@@ -100,12 +100,12 @@ function renderChallenges() {
         const categoryEl = document.createElement("div");
         categoryEl.classList.add("challenge-category");
 
-        categoryEl.innerHTML = `
-            <div class="category-title">
-                <div class="category-icon"><i class="fas fa-list"></i></div>
-                <h2>${cat}</h2>
-            </div>
-        `;
+        // categoryEl.innerHTML = `
+        //     <div class="category-title">
+        //         <div class="category-icon"><i class="fas fa-list"></i></div>
+        //         <h2>${cat}</h2>
+        //     </div>
+        // `;
 
         challenges
             .filter(c => c.category === cat)
@@ -218,6 +218,14 @@ async function refreshChallenges() {
 // Initialize challenges when DOM is loaded
 document.addEventListener("DOMContentLoaded", function() {
     fetchChallenges();
+
+    document.getElementById("open-challenges").addEventListener("click", () => {
+        document.querySelector(".challenges-overlay").classList.remove("hidden");
+    });".vip-back-button"
+
+    document.querySelector(".challenges-back-button").addEventListener("click", () => {
+        document.querySelector(".challenges-overlay").classList.add("hidden");
+    });
 
     // Set up periodic refresh (every 30 seconds)
     setInterval(fetchChallenges, 30000);

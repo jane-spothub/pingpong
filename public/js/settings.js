@@ -5,6 +5,7 @@ document.getElementById("openSettings").addEventListener("click", () => {
 document.querySelector(".close-settings").addEventListener("click", () => {
     document.getElementById("settingsPopup").classList.add("hidden");
 });
+
 document.getElementById("backbtnstn").addEventListener("click", () => {
     document.getElementById("settingsPopup").classList.add("hidden");
 });

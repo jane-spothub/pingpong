@@ -5,6 +5,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const usdBtn = document.getElementById('usdBtn');
     const eurBtn = document.getElementById('eurBtn');
 
+    document.getElementById("open-vip").addEventListener("click", () => {
+        document.querySelector(".vip-overlay").classList.remove("hidden");
+    });
+
+    document.querySelector(".vip-back-button").addEventListener("click", () => {
+        document.querySelector(".vip-overlay").classList.add("hidden");
+    });
     // Currency switching
     function setCurrency(currency) {
         kshBtn.classList.remove('active');

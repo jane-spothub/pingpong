@@ -1,4 +1,19 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // document.getElementById("daily-challenges-Popup").classList.add("hidden");
+
+    document.getElementById("openDailyChallenges").addEventListener("click", () => {
+        document.querySelector(".daily-settings-overlay").classList.remove("hidden");
+    });
+
+    document.querySelector(".back-daily-button").addEventListener("click", () => {
+        document.querySelector(".daily-settings-overlay").classList.add("hidden");
+    });
+
+    document.getElementById("back-daily-btn").addEventListener("click", () => {
+        // document.querySelector(".daily-settings-overlay").classList.remove("active");
+        document.querySelector(".daily-settings-overlay").classList.add("hidden");
+    });
+
     const claimButton = document.getElementById('claimButton');
     const notification = document.getElementById('rewardNotification');
     const streakCount = document.querySelector('.streak-count');

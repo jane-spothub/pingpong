@@ -1,15 +1,18 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>Ping Pong - Home</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/level.css">
+    <link rel="stylesheet" href="/css/vip.css">
+    <link rel="stylesheet" href="/css/challenges.css">
+    <link rel="stylesheet" href="/css/daily.css">
     <link rel="stylesheet" href="/css/settings.css">
 </head>
-<body class="home-body" >
+<body class="home-body">
 <!-- 🔹 Loader -->
 <div id="loader">
     <div class="loader-content">
@@ -20,235 +23,528 @@
         <p id="progress-text">Loading 0%</p>
     </div>
 </div>
-<div id="usernameOverlay" class="overlay hidden">
+<!--    username input-->
+<div id="usernameOverlay" class="username-overlay hidden">
     <div class="overlay-card">
         <h2>Welcome to Ping Pong 🏓</h2>
         <p>Please enter your username</p>
-        <input type="text" id="usernameInput" placeholder="Your name..." />
+        <input type="text" id="usernameInput" placeholder="Your name..."/>
         <button id="usernameSubmit">Start Playing</button>
     </div>
 </div>
 
-    <div id="gameContainer">
-        <canvas id="gameHomePaddle"></canvas>
+<!-- menu and play btn and the background canvas -->
+<div id="gameContainer">
+    <canvas id="gameHomePaddle"></canvas>
 
-        <!-- Left Menu -->
-        <div class="side-menu left">
-            <a href="/challenge" class="menu-btn">
-                <div class="menu-btn-icon"><i class="fas fa-trophy"></i></div>
-                Challenge
-            </a>
-            <a href="/daily" class="menu-btn">
-                <div class="menu-btn-icon"><i class="fas fa-gift"></i></div>
-                Daily
-            </a>
-            <a href="/vip" class="menu-btn">
-                <div class="menu-btn-icon"><i class="fas fa-crown"></i></div>
-                VIP
-            </a>
+    <!-- Left Menu -->
+    <div class="side-menu left">
+        <div id="open-challenges" class="menu-btn">
+            <div class="menu-btn-icon"><i class="fas fa-trophy"></i></div>
+            Challenge
         </div>
+        <div class="menu-btn" id="openDailyChallenges">
+            <div class="menu-btn-icon"><i class="fas fa-gift"></i></div>
+            Daily
+        </div>
+        <div id="open-vip" class="menu-btn">
+            <div class="menu-btn-icon"><i class="fas fa-crown"></i></div>
+            VIP
+        </div>
+    </div>
 
-        <!-- Right Menu -->
-        <div class="side-menu right">
-            <a href="/level" class="menu-btn">
-                <div class="menu-btn-icon"><i class="fas fa-medal"></i></div>
-                Level
-            </a>
-            <div id="openSettings" class="menu-btn">
-                <div class="menu-btn-icon"><i class="fas fa-sliders-h"></i></div>
-                Settings
-            </div>
+    <!-- Right Menu -->
+    <div class="side-menu right">
+        <div id="openlevels" class="menu-btn">
+            <div class="menu-btn-icon"><i class="fas fa-medal"></i></div>
+            Level
         </div>
+        <div id="openSettings" class="menu-btn">
+            <div class="menu-btn-icon"><i class="fas fa-sliders-h"></i></div>
+            Settings
+        </div>
+    </div>
 
-        <!-- Progress Display -->
-        <div id="progressHomeBar" class="progress-top">
-            <span id="xp-display">⭐: 0 | 🛡️Lvl: 1</span>
-            <span id="coins-display">🟡 0</span>
-        </div>
-<!--        bottom pad-->
+    <!-- Progress Display -->
+    <div id="progressHomeBar" class="progress-top">
+        <span id="xp-display">⭐: 0 | 🛡️Lvl: 1</span>
+        <span id="coins-display">🟡 0</span>
+    </div>
+    <!--        bottom pad-->
+    <div class="play-btn-container">
         <a href="/bot" id="btnPlay"> PLAY </a>
 
     </div>
+
+</div>
+<!-- dailychallenges popup-->
+<div id="daily-challenges-Popup" class="daily-settings-overlay hidden">
+
+    <div class="menu-container">
+        <div class="header">
+            <h1>🎁 Daily Rewards</h1>
+            <p class="subtitle">Login daily to claim amazing rewards!</p>
+
+            <div class="login-streak">
+                <i class="fas fa-fire flame-icon"></i>
+                <span class="streak-text">Current streak: </span>
+                <span class="streak-count">5 days</span>
+            </div>
+        </div>
+
+        <div class="reward-calendar">
+            <!-- Day 1 -->
+            <div class="reward-day claimed">
+                <div class="day-number">Day 1</div>
+                <div class="reward-icon">💰</div>
+                <div class="reward-amount">25</div>
+                <div class="reward-type">Coins</div>
+            </div>
+
+            <!-- Day 2 -->
+            <div class="reward-day claimed">
+                <div class="day-number">Day 2</div>
+                <div class="reward-icon">⭐</div>
+                <div class="reward-amount">50</div>
+                <div class="reward-type">XP</div>
+            </div>
+
+            <!-- Day 3 -->
+            <div class="reward-day claimed">
+                <div class="day-number">Day 3</div>
+                <div class="reward-icon">💰</div>
+                <div class="reward-amount">50</div>
+                <div class="reward-type">Coins</div>
+            </div>
+
+            <!-- Day 4 -->
+            <div class="reward-day claimed">
+                <div class="day-number">Day 4</div>
+                <div class="reward-icon">🎨</div>
+                <div class="reward-amount">1</div>
+                <div class="reward-type">Paddle Skin</div>
+            </div>
+
+            <!-- Day 5 -->
+            <div class="reward-day claimed">
+                <div class="day-number">Day 5</div>
+                <div class="reward-icon">💰</div>
+                <div class="reward-amount">75</div>
+                <div class="reward-type">Coins</div>
+            </div>
+
+            <!-- Day 6 -->
+            <div class="reward-day available">
+                <div class="day-number">Day 6</div>
+                <div class="reward-icon">⭐</div>
+                <div class="reward-amount">100</div>
+                <div class="reward-type">XP</div>
+            </div>
+
+            <!-- Day 7 -->
+            <div class="reward-day future">
+                <div class="day-number">Day 7</div>
+                <div class="reward-icon">🎁</div>
+                <div class="reward-amount">Mystery</div>
+                <div class="reward-type">Box</div>
+            </div>
+        </div>
+
+        <div class="claim-container">
+            <button class="btn-claim" id="claimButton">Claim Daily Reward (Day 6)</button>
+        </div>
+
+        <div class="back-daily-button">Back to Home</div>
+    </div>
+
+    <div class="notification" id="rewardNotification">
+        <i class="fas fa-gift notification-icon"></i>
+        <div>Reward claimed: 100 XP!</div>
+    </div>
+</div>
 <!-- Settings Popup -->
 <div id="settingsPopup" class="settings-overlay hidden">
     <div class="settings-card">
         <button class="close-settings">&times;</button>
         <h1>Game Settings</h1>
 
-            <div class="settings-section">
-                <h2 class="section-title">
-                    <i class="fas fa-question-circle"></i> How to Play
-                </h2>
-                <div class="instructions">
-                    <p>Control your paddle and hit the ball back to your opponent. Score points when your opponent misses the
-                        ball.</p>
-                    <div class="steps">
-                        <div class="key-container">
-                            <span class="key">🎮</span>
-                            <p>Use <strong>Arrow Keys</strong> (or drag on mobile) to move your paddle left, right, forward, and
-                                backward.</p>
-                        </div>
-                        <div class="key-container">
-                            <span class="key">🏓</span>
-                            <p>Hit the ball back across the table before it bounces past your side.</p>
-                        </div>
-                        <div class="key-container">
-                            <span class="key">⭐</span>
-                            <p>First to <strong>3 points</strong> wins a round. Best of <strong>3 rounds</strong> wins the
-                                match.</p>
-                        </div>
-                        <!--                <div class="key-container">-->
-                        <!--                    <span class="key">🤖</span>-->
-                        <!--                    <p>Choose a difficulty level to adjust the bot’s speed and skill.</p>-->
-                        <!--                </div>-->
+        <div class="settings-section">
+            <h2 class="section-title">
+                <i class="fas fa-question-circle"></i> How to Play
+            </h2>
+            <div class="instructions">
+                <p>Control your paddle and hit the ball back to your opponent. Score points when your opponent
+                    misses the
+                    ball.</p>
+                <div class="steps">
+                    <div class="key-container">
+                        <span class="key">🎮</span>
+                        <p>Use <strong>Arrow Keys</strong> (or drag on mobile) to move your paddle left, right,
+                            forward, and
+                            backward.</p>
                     </div>
-
+                    <div class="key-container">
+                        <span class="key">🏓</span>
+                        <p>Hit the ball back across the table before it bounces past your side.</p>
+                    </div>
+                    <div class="key-container">
+                        <span class="key">⭐</span>
+                        <p>First to <strong>3 points</strong> wins a round. Best of <strong>3 rounds</strong> wins
+                            the
+                            match.</p>
+                    </div>
+                    <!--                <div class="key-container">-->
+                    <!--                    <span class="key">🤖</span>-->
+                    <!--                    <p>Choose a difficulty level to adjust the bot’s speed and skill.</p>-->
+                    <!--                </div>-->
                 </div>
+
             </div>
+        </div>
 
-            <!-- Game Sounds Section -->
-            <div class="settings-section">
-                <h2 class="section-title">
-                    <i class="fas fa-volume-up"></i> Game Sounds
-                </h2>
+        <!-- Game Sounds Section -->
+        <div class="settings-section">
+            <h2 class="section-title">
+                <i class="fas fa-volume-up"></i> Game Sounds
+            </h2>
 
-                <div class="sound-control">
-                    <div class="sound-info">
-                        <div class="sound-icon">
-                            <i class="fas fa-volume-mute"></i>
-                        </div>
-                        <div>Master Sound</div>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="sound-control">
-                    <div class="sound-info">
-                        <div class="sound-icon">
-                            <i class="fas fa-music"></i>
-                        </div>
-                        <div>Background Music</div>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="volume-control">
+            <div class="sound-control">
+                <div class="sound-info">
                     <div class="sound-icon">
-                        <i class="fas fa-volume-up"></i>
+                        <i class="fas fa-volume-mute"></i>
                     </div>
-                    <input type="range" class="volume-slider" min="0" max="100" value="80">
-                    <span>80%</span>
+                    <div>Master Sound</div>
                 </div>
-
-                <div class="sound-control">
-                    <div class="sound-info">
-                        <div class="sound-icon">
-                            <i class="fas fa-baseball-ball"></i>
-                        </div>
-                        <div>Ball Sounds</div>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="sound-control">
-                    <div class="sound-info">
-                        <div class="sound-icon">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <div>Victory Sounds</div>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
             </div>
 
-            <!-- Additional Settings Section -->
-            <div class="settings-section">
-                <h2 class="section-title">
-                    <i class="fas fa-cog"></i> Game Settings
-                </h2>
-
-                <div class="settings-option">
-                    <div class="option-info">
-                        <div class="option-icon">
-                            <i class="fas fa-tachometer-alt"></i>
-                        </div>
-                        <div>Game Difficulty</div>
+            <div class="sound-control">
+                <div class="sound-info">
+                    <div class="sound-icon">
+                        <i class="fas fa-music"></i>
                     </div>
-                    <select>
-                        <option>Easy</option>
-                        <option selected>Medium</option>
-                        <option>Hard</option>
-                        <option>Expert</option>
-                    </select>
+                    <div>Background Music</div>
                 </div>
-
-                <div class="settings-option">
-                    <div class="option-info">
-                        <div class="option-icon">
-                            <i class="fas fa-palette"></i>
-                        </div>
-                        <div>Ball Color</div>
-                    </div>
-                    <select>
-                        <option>White</option>
-                        <option selected>Yellow</option>
-                        <option>Red</option>
-                        <option>Green</option>
-                        <option>Blue</option>
-                    </select>
-                </div>
-
-                <div class="settings-option">
-                    <div class="option-info">
-                        <div class="option-icon">
-                            <i class="fas fa-border-style"></i>
-                        </div>
-                        <div>Paddle Size</div>
-                    </div>
-                    <select>
-                        <option>Small</option>
-                        <option selected>Medium</option>
-                        <option>Large</option>
-                    </select>
-                </div>
-
-                <div class="settings-option">
-                    <div class="option-info">
-                        <div class="option-icon">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                        <div>Visual Effects</div>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
             </div>
 
-            <div  class="back-button" id="backbtnstn" >Back to Home</div>
+            <div class="volume-control">
+                <div class="sound-icon">
+                    <i class="fas fa-volume-up"></i>
+                </div>
+                <input type="range" class="volume-slider" min="0" max="100" value="80">
+                <span>80%</span>
+            </div>
+
+            <div class="sound-control">
+                <div class="sound-info">
+                    <div class="sound-icon">
+                        <i class="fas fa-baseball-ball"></i>
+                    </div>
+                    <div>Ball Sounds</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="sound-control">
+                <div class="sound-info">
+                    <div class="sound-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div>Victory Sounds</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Additional Settings Section -->
+        <div class="settings-section">
+            <h2 class="section-title">
+                <i class="fas fa-cog"></i> Game Settings
+            </h2>
+
+            <div class="settings-option">
+                <div class="option-info">
+                    <div class="option-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div>Game Difficulty</div>
+                </div>
+                <select>
+                    <option>Easy</option>
+                    <option selected>Medium</option>
+                    <option>Hard</option>
+                    <option>Expert</option>
+                </select>
+            </div>
+
+            <div class="settings-option">
+                <div class="option-info">
+                    <div class="option-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div>Ball Color</div>
+                </div>
+                <select>
+                    <option>White</option>
+                    <option selected>Yellow</option>
+                    <option>Red</option>
+                    <option>Green</option>
+                    <option>Blue</option>
+                </select>
+            </div>
+
+            <div class="settings-option">
+                <div class="option-info">
+                    <div class="option-icon">
+                        <i class="fas fa-border-style"></i>
+                    </div>
+                    <div>Paddle Size</div>
+                </div>
+                <select>
+                    <option>Small</option>
+                    <option selected>Medium</option>
+                    <option>Large</option>
+                </select>
+            </div>
+
+            <div class="settings-option">
+                <div class="option-info">
+                    <div class="option-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div>Visual Effects</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="back-button" id="backbtnstn">Back to Home</div>
     </div>
 </div>
+<!-- challenges popup -->
+<div class="challenges-overlay hidden">
+    <div class="container">
+        <div class="header">
+            <div class="challenges-back-button">back</div>
+            <h1>Ping Pong Challenges</h1>
+            <p class="subtitle">Complete tasks to earn rewards and level up!</p>
+        </div>
 
-<script  type="module" src="/js/paddlehome.js"></script>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value">1,250</div>
+                <div class="stat-label">XP</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">350</div>
+                <div class="stat-label">Coins</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Level</div>
+            </div>
+        </div>
+
+        <div class="challenges-container" id="challengesContainer">
+
+        </div>
+    </div>
+
+    <div class="notification" id="rewardNotification">
+        <i class="fas fa-check-circle"></i> Reward claimed: +75 XP & +35 Coins!
+    </div>
+
+</div>
+<!-- vip popup -->
+<div id="vip-Popup" class="vip-overlay hidden">
+    <div class="menu-container">
+        <div class="header">
+            <div class="vip-back-button">Back</div>
+
+            <!--                <div class="back-btn"><i class="fas fa-arrow-left"></i></div>-->
+            <h1>VIP Packages</h1>
+            <p class="subtitle">Unlock exclusive upgrades and features!</p>
+
+            <div class="currency-selector">
+                <button class="currency-btn active" id="kshBtn">KSH</button>
+                <button class="currency-btn" id="usdBtn">USD</button>
+                <button class="currency-btn" id="eurBtn">EUR</button>
+            </div>
+        </div>
+
+        <div class="vip-container">
+            <!-- Basic VIP Package -->
+            <div class="vip-package">
+                <h3 class="package-title">Basic VIP</h3>
+                <div class="package-price">KSH 200 <span class="price-ksh">/ month</span></div>
+                <ul class="package-features">
+                    <li><i class="fas fa-check"></i> Exclusive Paddle Skin</li>
+                    <li><i class="fas fa-check"></i> +10% XP Boost</li>
+                    <li><i class="fas fa-check"></i> 100 Coins Daily</li>
+                    <li><i class="fas fa-times" style="color: #ff4757;"></i> Advanced Statistics</li>
+                    <li><i class="fas fa-times" style="color: #ff4757;"></i> Priority Support</li>
+                </ul>
+                <button class="btn-purchase">Purchase Now</button>
+            </div>
+
+            <!-- Premium VIP Package (Most Popular) -->
+            <div class="vip-package popular">
+                <h3 class="package-title">Premium VIP</h3>
+                <div class="package-price">KSH 500 <span class="price-ksh">/ month</span></div>
+                <ul class="package-features">
+                    <li><i class="fas fa-check"></i> 3 Exclusive Paddle Skins</li>
+                    <li><i class="fas fa-check"></i> +25% XP Boost</li>
+                    <li><i class="fas fa-check"></i> 250 Coins Daily</li>
+                    <li><i class="fas fa-check"></i> Advanced Statistics</li>
+                    <li><i class="fas fa-check"></i> Priority Support</li>
+                </ul>
+                <button class="btn-purchase">Purchase Now</button>
+            </div>
+
+            <!-- Ultimate VIP Package -->
+            <div class="vip-package">
+                <h3 class="package-title">Ultimate VIP</h3>
+                <div class="package-price">KSH 1000 <span class="price-ksh">/ month</span></div>
+                <ul class="package-features">
+                    <li><i class="fas fa-check"></i> All Exclusive Paddle Skins</li>
+                    <li><i class="fas fa-check"></i> +50% XP Boost</li>
+                    <li><i class="fas fa-check"></i> 500 Coins Daily</li>
+                    <li><i class="fas fa-check"></i> Advanced Statistics</li>
+                    <li><i class="fas fa-check"></i> 24/7 Priority Support</li>
+                    <li><i class="fas fa-check"></i> Exclusive Tournaments</li>
+                </ul>
+                <button class="btn-purchase">Purchase Now</button>
+            </div>
+        </div>
+
+        <div class="items-container">
+            <h3 class="section-title">Individual Upgrades</h3>
+            <p style="text-align: center; margin-bottom: 20px; opacity: 0.8;">Purchase individual items with KSH</p>
+
+            <div class="vip-items">
+                <!-- Item 1 -->
+                <div class="vip-item">
+                    <div class="item-icon"><i class="fas fa-table-tennis-paddle-ball"></i></div>
+                    <h4 class="item-title">Pro Paddle</h4>
+                    <div class="item-price">KSH 150</div>
+                    <button class="item-btn">Buy Now</button>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="vip-item">
+                    <div class="item-icon"><i class="fas fa-palette"></i></div>
+                    <h4 class="item-title">Gold Skin</h4>
+                    <div class="item-price">KSH 100</div>
+                    <button class="item-btn">Buy Now</button>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="vip-item">
+                    <div class="item-icon"><i class="fas fa-bolt"></i></div>
+                    <h4 class="item-title">Speed Boost</h4>
+                    <div class="item-price">KSH 200</div>
+                    <button class="item-btn">Buy Now</button>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="vip-item">
+                    <div class="item-icon"><i class="fas fa-chart-line"></i></div>
+                    <h4 class="item-title">Advanced Stats</h4>
+                    <div class="item-price">KSH 120</div>
+                    <button class="item-btn">Buy Now</button>
+                </div>
+
+                <!-- item 5 -->
+                <div class="vip-item">
+                    <div class="item-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h4 class="item-title">Defense Boost</h4>
+                    <div class="item-price">KSH 80</div>
+                    <button class="item-btn">Buy Now</button>
+                </div>
+
+                <div class="vip-item">
+                    <div class="item-icon"><i class="fas fa-star"></i></div>
+                    <h4 class="item-title">Rare Effect</h4>
+                    <div class="item-price">KSH 90</div>
+                    <button class="item-btn">Buy Now</button>
+                </div>
+
+                <div class="vip-item">
+                    <div class="item-icon"><i class="fas fa-coins"></i></div>
+                    <h4 class="item-title">Coin Multiplier</h4>
+                    <div class="item-price">KSH 70</div>
+                    <button class="item-btn">Buy Now</button>
+                </div>
+
+                <div class="vip-item">
+                    <div class="item-icon"><i class="fas fa-hat-wizard"></i></div>
+                    <h4 class="item-title">Avatar Hat</h4>
+                    <div class="item-price">KSH 45</div>
+                    <button class="item-btn">Buy Now</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="notification" id="rewardNotification">
+        <i class="fas fa-check-circle notification-icon"></i>
+        <div>Purchase successful! VIP activated.</div>
+    </div>
+</div>
+<!-- level popup -->
+<div class="level-overlay hidden">
+    <div class="menu-container">
+        <h1>Game Levels</h1>
+
+        <div class="level-progress">
+            Category <span id="current-category">1</span> - Level <span id="current-level">1</span>
+        </div>
+
+        <div class="categories-wrapper">
+            <div class="categories-tabs" id="categories-tabs">
+                <!-- Category tabs will be generated here -->
+            </div>
+        </div>
+
+        <div id="categories-container">
+            <!-- Categories will be dynamically generated here -->
+        </div>
+
+        <div class="lvl-back-button">Back to Home</div>
+    </div>
+</div>
+</body>
+
+<!-- home js-->
+<script type="module" src="/js/paddlehome.js"></script>
+<!--overlays -->
 <script src="/js/user.js"></script>
 <script src="/js/settings.js"></script>
-
+<script src="/js/daily.js"></script>
+<script src="/js/vip.js"></script>
+<script src="/js/level.js"></script>
+<script src="/js/challenge.js"></script>
 <script src="/js/howtobtns.js"></script>
-<script src="/js/fetchdata.js"></script>
 <script src="js/loader.js"></script>
 
-</body>
+<!--data -->
+<script src="/js/fetchdata.js"></script>
+
 </html>

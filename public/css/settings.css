@@ -1,3 +1,7 @@
+.settings-overlay.hidden {
+    display: none;
+}
+
 .settings-overlay {
     position: fixed;
     top: 0;
@@ -13,7 +17,6 @@
     /*padding: 20px;    !* so content isn’t glued to edges *!*/
 }
 
-
 .settings-card {
     background: rgba(0,0,0,0.7);
     border-radius: 15px;
@@ -28,9 +31,7 @@
 
 }
 
-.settings-overlay.hidden {
-    display: none;
-}
+
 
 .settings-card h1 {
     text-align: center;

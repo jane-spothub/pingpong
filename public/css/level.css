@@ -1,21 +1,26 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+.level-overlay.hidden {
+    display: none;
 }
 
-body {
-    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-    color: #fff;
-    min-height: 100vh;
-    padding: 20px;
+.level-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    overflow-y: auto; /* allow scroll if card overflows */
+    /*padding: 20px;    !* so content isn’t glued to edges *!*/
 }
 
 .close-button {
-    position: absolute;
-    top: 30px;
-    right: 30px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
     width: 40px;
     height: 40px;
     background: rgba(0, 0, 0, 0.5);
@@ -37,6 +42,12 @@ body {
     transform: scale(1.1);
 }
 
+.lvl-back-button {
+    background: linear-gradient(to right, #ff0000, #ff5e62);
+    padding: 10px;
+    border-radius: 10px;
+}
+
 .menu-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -44,6 +55,7 @@ body {
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
 }
 
 h1 {
@@ -51,7 +63,8 @@ h1 {
     font-size: 2.5rem;
     margin-bottom: 20px;
     color: #fdbb2d;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    padding-top: 10px;
 }
 
 .level-progress {
@@ -59,10 +72,60 @@ h1 {
     margin-bottom: 25px;
     font-size: 1.2rem;
     opacity: 0.9;
+    background: rgba(253, 187, 45, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(253, 187, 45, 0.3);
+}
+
+.categories-wrapper {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.categories-tabs {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.categories-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.category-tab {
+    flex: 0 0 auto;
+    padding: 12px 20px;
+    margin-right: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.category-tab.active {
+    background: rgba(253, 187, 45, 0.2);
+    border-color: #fdbb2d;
+    transform: scale(1.05);
+}
+
+.category-tab i {
+    margin-right: 8px;
 }
 
 .category-container {
     margin-bottom: 30px;
+    display: none;
+}
+
+.category-container.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
 }
 
 .category-title {
@@ -96,7 +159,8 @@ h1 {
     justify-content: center;
     position: relative;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(0);
 }
 
 .level-button.available {
@@ -106,7 +170,7 @@ h1 {
 
 .level-button.available:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
 
 .level-button.completed {
@@ -157,16 +221,100 @@ h1 {
 }
 
 /* Category colors */
-.category-1 .category-title { color: #4ecdc4; border-color: #4ecdc4; }
-.category-2 .category-title { color: #ff6b6b; border-color: #ff6b6b; }
-.category-3 .category-title { color: #ffd166; border-color: #ffd166; }
-.category-4 .category-title { color: #06d6a0; border-color: #06d6a0; }
-.category-5 .category-title { color: #118ab2; border-color: #118ab2; }
-.category-6 .category-title { color: #ef476f; border-color: #ef476f; }
-.category-7 .category-title { color: #9c89b8; border-color: #9c89b8; }
-.category-8 .category-title { color: #fca311; border-color: #fca311; }
-.category-9 .category-title { color: #e63946; border-color: #e63946; }
-.category-10 .category-title { color: #a8dadc; border-color: #a8dadc; }
+.category-1 .category-title {
+    color: #4ecdc4;
+    border-color: #4ecdc4;
+}
+
+.category-2 .category-title {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+.category-3 .category-title {
+    color: #ffd166;
+    border-color: #ffd166;
+}
+
+.category-4 .category-title {
+    color: #06d6a0;
+    border-color: #06d6a0;
+}
+
+.category-5 .category-title {
+    color: #118ab2;
+    border-color: #118ab2;
+}
+
+.category-6 .category-title {
+    color: #ef476f;
+    border-color: #ef476f;
+}
+
+.category-7 .category-title {
+    color: #9c89b8;
+    border-color: #9c89b8;
+}
+
+.category-8 .category-title {
+    color: #fca311;
+    border-color: #fca311;
+}
+
+.category-9 .category-title {
+    color: #e63946;
+    border-color: #e63946;
+}
+
+.category-10 .category-title {
+    color: #a8dadc;
+    border-color: #a8dadc;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Level completion indicator */
+.completion-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #fdbb2d;
+    color: #000;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -182,19 +330,22 @@ h1 {
     .category-title {
         font-size: 1.5rem;
     }
+
     .close-button {
-        top: 20px;
-        right: 20px;
+        top: 15px;
+        right: 15px;
         width: 35px;
         height: 35px;
         font-size: 1.3rem;
     }
-    .close-button {
-        top: 15px;
-        right: 15px;
-        width: 30px;
-        height: 30px;
-        font-size: 1.1rem;
+
+    .categories-tabs {
+        padding-bottom: 5px;
+    }
+
+    .category-tab {
+        padding: 10px 15px;
+        font-size: 0.9rem;
     }
 }
 
@@ -206,5 +357,18 @@ h1 {
 
     .level-number {
         font-size: 1.3rem;
+    }
+
+    .close-button {
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        font-size: 1.1rem;
+    }
+
+    .category-tab {
+        padding: 8px 12px;
+        font-size: 0.8rem;
     }
 }
