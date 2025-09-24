@@ -80,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
             loader.style.display = "none";
             mainContent.style.display = "block";
             document.getElementById("usernameOverlay").classList.remove("hidden");
+            document.getElementById("usernameOverlay").classList.add("active");
 
         }, 800);
 
