@@ -79,6 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             loader.style.display = "none";
             mainContent.style.display = "block";
+            document.getElementById("usernameOverlay").classList.remove("hidden");
+
         }, 800);
 
         // 🎵 Start background music here

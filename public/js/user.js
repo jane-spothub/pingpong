@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let savedUsername = localStorage.getItem("username");
     if (savedUsername) {
         overlay.style.display = "none";
+        document.getElementById("gameContainer").style.display = "block";
+
     }
 
     button.addEventListener("click", () => {
@@ -28,5 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Hide overlay
         overlay.style.display = "none";
+        document.getElementById("gameContainer").style.display = "block";
+
     });
 });
