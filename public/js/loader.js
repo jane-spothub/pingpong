@@ -25,9 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
         "assets/img/pingpong-poster.png",
         "assets/audio/paddle-hit-ball.wav",
         "assets/audio/ball-hit-table.wav",
-        "assets/audio/score.wav",
+        "assets/audio/pinpon-bg-snd.mp3",
+        // "assets/audio/score.wav",
         "assets/audio/win-sound.wav",
-        "assets/audio/lose.wav"
+        "assets/audio/lose.wav",
+
     ];
 
     let loaded = 0;
