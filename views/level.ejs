@@ -423,7 +423,7 @@
         "fa-medal"
     ];
 
-    const LEVELS_PER_CATEGORY = 30;
+    const LEVELS_PER_CATEGORY = 15;
     let userProgress = {
         xp: 0,
         level: 1,
@@ -437,16 +437,14 @@
     // Fetch user progress from API
     async function loadUserProgress() {
         try {
-            const response = await fetch('/api/progress');
+            const username = localStorage.getItem('username') || 'guest';
+            const response = await fetch(`/api/progress/${username}`);
             if (response.ok) {
                 const data = await response.json();
                 console.log("API Data:", data);
-
                 userProgress = data;
-
-                // Determine the correct current level display
+                // Calculate currentCategory, currentLevel, and globalStage
                 let currentCategory, currentLevel, globalStage;
-
                 if (data.hasOwnProperty('stage') && data.hasOwnProperty('category')) {
                     currentCategory = data.category;
                     currentLevel = data.stage;
@@ -460,14 +458,13 @@
                     currentLevel = 1;
                     globalStage = 1;
                 }
-
                 updateUI(currentCategory, currentLevel, globalStage);
             } else {
                 throw new Error('API response not OK');
             }
         } catch (error) {
             console.error('Error loading progress:', error);
-            updateUI(1, 1, 1);
+            updateUI(1, 1, 1); // Fallback to default
         }
     }
 
@@ -480,7 +477,6 @@
         // Generate category tabs
         const categoriesTabs = document.getElementById('categories-tabs');
         categoriesTabs.innerHTML = '';
-
         for (let i = 1; i <= 10; i++) {
             const tab = document.createElement('div');
             tab.className = `category-tab ${i === currentCategory ? 'active' : ''}`;
@@ -492,7 +488,6 @@
         // Generate categories and levels
         const categoriesContainer = document.getElementById('categories-container');
         categoriesContainer.innerHTML = '';
-
         for (let i = 1; i <= 10; i++) {
             const categoryDiv = document.createElement('div');
             categoryDiv.className = `category-container category-${i} ${i === currentCategory ? 'active' : ''}`;
@@ -507,7 +502,6 @@
 
             // Calculate completed levels in this category
             let completedInCategory = 0;
-
             for (let j = 1; j <= LEVELS_PER_CATEGORY; j++) {
                 const levelNumber = (i - 1) * LEVELS_PER_CATEGORY + j;
                 const levelButton = document.createElement('button');
@@ -518,19 +512,19 @@
                     // Level is completed
                     levelButton.classList.add('completed');
                     levelButton.innerHTML = `
-                            <div class="level-number">${j}</div>
-                            <div class="level-status">Completed</div>
-                            <div class="level-icon"><i class="fas fa-check"></i></div>
-                        `;
+                    <div class="level-number">${j}</div>
+                    <div class="level-status">Completed</div>
+                    <div class="level-icon"><i class="fas fa-check"></i></div>
+                `;
                     levelButton.onclick = () => startLevel(i, j);
                     completedInCategory++;
                 } else if (levelNumber === globalStage) {
                     // Current level
                     levelButton.classList.add('available');
                     levelButton.innerHTML = `
-                            <div class="level-number">${j}</div>
-                            <div class="level-status">Play Now!</div>
-                        `;
+                    <div class="level-number">${j}</div>
+                    <div class="level-status">Play Now!</div>
+                `;
                     if (i === currentCategory && j === currentLevel) {
                         levelButton.classList.add('pulse');
                     }
@@ -539,13 +533,12 @@
                     // Locked level
                     levelButton.classList.add('locked');
                     levelButton.innerHTML = `
-                            <div class="level-number">${j}</div>
-                            <div class="level-status">Locked</div>
-                            <div class="level-icon"><i class="fas fa-lock"></i></div>
-                        `;
+                    <div class="level-number">${j}</div>
+                    <div class="level-status">Locked</div>
+                    <div class="level-icon"><i class="fas fa-lock"></i></div>
+                `;
                     levelButton.onclick = null;
                 }
-
                 levelsGrid.appendChild(levelButton);
             }
 
@@ -561,9 +554,9 @@
             categoryDiv.appendChild(levelsGrid);
             categoriesContainer.appendChild(categoryDiv);
         }
-
         currentSelectedCategory = currentCategory;
     }
+
 
     // Switch between categories
     function switchCategory(categoryId) {
@@ -572,65 +565,62 @@
             tab.classList.remove('active');
         });
         document.querySelector(`.category-tab:nth-child(${categoryId})`).classList.add('active');
-
         // Update category visibility
         document.querySelectorAll('.category-container').forEach(container => {
             container.classList.remove('active');
         });
         document.getElementById(`category-${categoryId}`).classList.add('active');
-
         currentSelectedCategory = categoryId;
-
         // Scroll to top of category
         document.getElementById(`category-${categoryId}`).scrollIntoView({behavior: 'smooth'});
     }
 
+
     // Start a level
     function startLevel(category, level) {
-        // Calculate global level number
-        const globalLevel = (category - 1) * LEVELS_PER_CATEGORY + level;
-
-        // Show a confirmation message
-        // const playNow = confirm(`Start ${categoryNames[category-1]} - Level ${level}?`);
-
-        // if (playNow) {
         // Update user progress
         userProgress.category = category;
         userProgress.stage = level;
-
         // Save progress
         saveProgress();
-
         // Redirect to bot game page with level parameters
         window.location.href = `/bot?category=${category}&level=${level}`;
-        // }
     }
+
+
 
     // Save progress to API
     async function saveProgress() {
         try {
+            const username = localStorage.getItem('username') || 'guest';
             const response = await fetch('/api/progress', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(userProgress)
+                body: JSON.stringify({
+                    username,
+                    xp: userProgress.xp,
+                    level: userProgress.level,
+                    coins: userProgress.coins,
+                    category: userProgress.category,
+                    stage: userProgress.stage
+                })
             });
-
             if (!response.ok) {
                 throw new Error('API save failed');
             }
-
             console.log("Progress saved successfully");
         } catch (error) {
             console.error('Error saving progress:', error);
         }
     }
 
+
+
     // Initialize the page
     document.addEventListener('DOMContentLoaded', () => {
         loadUserProgress();
-
         // Refresh progress when page becomes visible
         document.addEventListener('visibilitychange', function () {
             if (!document.hidden) {
@@ -638,6 +628,7 @@
             }
         });
     });
+
 </script>
 </body>
 </html>

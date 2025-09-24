@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/settings.css">
 </head>
 <body class="home-body" >
 <!-- 🔹 Loader -->
@@ -53,33 +54,197 @@
                 <div class="menu-btn-icon"><i class="fas fa-medal"></i></div>
                 Level
             </a>
-            <a href="/settings" class="menu-btn">
+            <div id="openSettings" class="menu-btn">
                 <div class="menu-btn-icon"><i class="fas fa-sliders-h"></i></div>
                 Settings
-            </a>
+            </div>
         </div>
 
         <!-- Progress Display -->
-        <div id="progressHomeBar">
-
-            <span id="xp-display">💎: 0 | Lvl: 1</span>
-            <span id="coins-display">💰 0</span>
+        <div id="progressHomeBar" class="progress-top">
+            <span id="xp-display">⭐: 0 | 🛡️Lvl: 1</span>
+            <span id="coins-display">🟡 0</span>
         </div>
 <!--        bottom pad-->
         <a href="/bot" id="btnPlay"> PLAY </a>
 
     </div>
+<!-- Settings Popup -->
+<div id="settingsPopup" class="settings-overlay hidden">
+    <div class="settings-card">
+        <button class="close-settings">&times;</button>
+        <h1>Game Settings</h1>
 
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-question-circle"></i> How to Play
+                </h2>
+                <div class="instructions">
+                    <p>Control your paddle and hit the ball back to your opponent. Score points when your opponent misses the
+                        ball.</p>
+                    <div class="steps">
+                        <div class="key-container">
+                            <span class="key">🎮</span>
+                            <p>Use <strong>Arrow Keys</strong> (or drag on mobile) to move your paddle left, right, forward, and
+                                backward.</p>
+                        </div>
+                        <div class="key-container">
+                            <span class="key">🏓</span>
+                            <p>Hit the ball back across the table before it bounces past your side.</p>
+                        </div>
+                        <div class="key-container">
+                            <span class="key">⭐</span>
+                            <p>First to <strong>3 points</strong> wins a round. Best of <strong>3 rounds</strong> wins the
+                                match.</p>
+                        </div>
+                        <!--                <div class="key-container">-->
+                        <!--                    <span class="key">🤖</span>-->
+                        <!--                    <p>Choose a difficulty level to adjust the bot’s speed and skill.</p>-->
+                        <!--                </div>-->
+                    </div>
 
-<div id="howToPlay" class="container how-to-play hidden">
-    <h1>How to Play</h1>
+                </div>
+            </div>
 
+            <!-- Game Sounds Section -->
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-volume-up"></i> Game Sounds
+                </h2>
 
-<!--    <button id="btnPlayNow" class="btn big">Start Playing</button>-->
-    <button id="btnBackHome" class="btn">Back to Home</button>
+                <div class="sound-control">
+                    <div class="sound-info">
+                        <div class="sound-icon">
+                            <i class="fas fa-volume-mute"></i>
+                        </div>
+                        <div>Master Sound</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="sound-control">
+                    <div class="sound-info">
+                        <div class="sound-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div>Background Music</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="volume-control">
+                    <div class="sound-icon">
+                        <i class="fas fa-volume-up"></i>
+                    </div>
+                    <input type="range" class="volume-slider" min="0" max="100" value="80">
+                    <span>80%</span>
+                </div>
+
+                <div class="sound-control">
+                    <div class="sound-info">
+                        <div class="sound-icon">
+                            <i class="fas fa-baseball-ball"></i>
+                        </div>
+                        <div>Ball Sounds</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="sound-control">
+                    <div class="sound-info">
+                        <div class="sound-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div>Victory Sounds</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Additional Settings Section -->
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-cog"></i> Game Settings
+                </h2>
+
+                <div class="settings-option">
+                    <div class="option-info">
+                        <div class="option-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div>Game Difficulty</div>
+                    </div>
+                    <select>
+                        <option>Easy</option>
+                        <option selected>Medium</option>
+                        <option>Hard</option>
+                        <option>Expert</option>
+                    </select>
+                </div>
+
+                <div class="settings-option">
+                    <div class="option-info">
+                        <div class="option-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div>Ball Color</div>
+                    </div>
+                    <select>
+                        <option>White</option>
+                        <option selected>Yellow</option>
+                        <option>Red</option>
+                        <option>Green</option>
+                        <option>Blue</option>
+                    </select>
+                </div>
+
+                <div class="settings-option">
+                    <div class="option-info">
+                        <div class="option-icon">
+                            <i class="fas fa-border-style"></i>
+                        </div>
+                        <div>Paddle Size</div>
+                    </div>
+                    <select>
+                        <option>Small</option>
+                        <option selected>Medium</option>
+                        <option>Large</option>
+                    </select>
+                </div>
+
+                <div class="settings-option">
+                    <div class="option-info">
+                        <div class="option-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div>Visual Effects</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div  class="back-button" id="backbtnstn" >Back to Home</div>
+    </div>
 </div>
-<script src="/js/paddlehome.js"></script>
+
+<script  type="module" src="/js/paddlehome.js"></script>
 <script src="/js/user.js"></script>
+<script src="/js/settings.js"></script>
 
 <script src="/js/howtobtns.js"></script>
 <script src="/js/fetchdata.js"></script>

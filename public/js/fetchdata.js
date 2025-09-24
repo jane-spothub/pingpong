@@ -6,8 +6,8 @@ async function fetchProgress() {
         const data = await res.json();
 
         // update UI
-        document.getElementById("xp-display").textContent = `💎: ${data.xp} | Lvl: ${data.level}`;
-        document.getElementById("coins-display").textContent = `💰 ${data.coins}`;
+        document.getElementById("xp-display").textContent = `⭐: ${data.xp} | 🛡️Lvl: ${data.level}`;
+        document.getElementById("coins-display").textContent = `🟡 ${data.coins}`;
     } catch (err) {
         console.error("❌ Failed to fetch progress:", err);
     }

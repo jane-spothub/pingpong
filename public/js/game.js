@@ -1,5 +1,3 @@
-import {SoundHandler} from "./soundHandler.js";
-
 const categoryNames = [
     "Rookie Rally",
     "Spin Masters",
@@ -12,12 +10,15 @@ const categoryNames = [
     "Legendary League",
     "Hall of Fame"
 ];
-
+import { SoundHandler } from "./soundHandler.js";
+if (!window.soundHandler) {
+    window.soundHandler = new SoundHandler();
+}
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    const soundHandler = new SoundHandler();
     const scoreEl = document.getElementById("score-display");
+    const homeEl = document.querySelector(".play-active-bar");
     let matchesPlayed = 0;
     let matchesWon = 0;
     let totalPlayTime = 0; // in seconds
@@ -46,18 +47,16 @@ document.addEventListener("DOMContentLoaded", () => {
     async function recordMatchCompletion(win) {
         matchesPlayed++;
         if (win) matchesWon++;
-
         const matchDuration = Math.floor((performance.now() - matchStartTime) / 1000);
         totalPlayTime += matchDuration;
-
         try {
-            // Send match data to backend
+            const username = localStorage.getItem('username') || 'guest';
             const response = await fetch('/api/match/complete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    username: localStorage.getItem('username') || 'guest',
-                    win: win,
+                    username,
+                    win,
                     duration: matchDuration,
                     category: currentCategory,
                     level: currentLevel,
@@ -65,17 +64,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     timestamp: new Date().toISOString()
                 })
             });
-
             const data = await response.json();
             console.log('Match recorded:', data);
-
-            // Update challenges based on match completion
             updateChallengesAfterMatch(win, matchDuration);
-
         } catch (error) {
             console.error('Failed to record match:', error);
         }
     }
+
 // Add this function to update challenges
     function updateChallengesAfterMatch(win, duration) {
         // Update "First Win of the Day" challenge if applicable
@@ -204,11 +200,11 @@ document.addEventListener("DOMContentLoaded", () => {
         new Promise(res => botImg.onload = res)
     ]).then(() => {
         console.log("✅ Images ready, starting level");
-        resetBall("bot");
+        // resetBall("bot");
         startLevel();
     }).catch(() => {
         console.warn("⚠️ Images failed, starting anyway");
-        resetBall("bot");
+        // resetBall("bot");
         startLevel();
     });
 
@@ -369,7 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ball.vz *= -bounceFactor;
             // Add some horizontal friction on bounce
             ball.vu *= 0.95;
-            soundHandler.play("hitTable");
+            // soundHandler.play("hitTable");
         }
 
         // Move in table plane
@@ -380,7 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (ball.u < 0 || ball.u > 1) {
             ball.vu *= -0.9;
             ball.vu *= 0.95; // Energy loss
-            soundHandler.play("hitTable");
+            // soundHandler.play("hitTable");
         }
     }
 
@@ -517,10 +513,53 @@ document.addEventListener("DOMContentLoaded", () => {
         return {x, y, scale};
     }
 
+    let serveTurn = "player"; // player serves first
 
     // === Enhanced Game Logic ===
-    function resetBall(to = "player") {
-        if (to === "bot") {
+    // function resetBall(to = "player") {
+    //
+    //     if (to === "bot") {
+    //         ball.u = bot.u;
+    //         ball.v = bot.v + 0.06;
+    //     } else {
+    //         ball.u = player.u;
+    //         ball.v = player.v - 0.06;
+    //     }
+    //
+    //     // Adjust difficulty based on category and level
+    //     let baseSpeed = 0.00020;
+    //     let speedFactor = 0.7;
+    //
+    //     if (currentCategory >= 2) baseSpeed += 0.00005 * (currentCategory - 1);
+    //     if (currentLevel >= 10) baseSpeed += 0.00002 * (currentLevel / 10);
+    //
+    //     botSpeed = baseSpeed;
+    //
+    //     if (currentCategory >= 4 || currentLevel >= 15) {
+    //         speedFactor = 1.4;
+    //         botSpeed = 0.00035;
+    //     }
+    //     if (currentCategory >= 7 || currentLevel >= 25) {
+    //         speedFactor = 2.0;
+    //         botSpeed = 0.00055;
+    //     }
+    //
+    //     // Reset ball physics
+    //     ball.vu = (Math.random() - 0.5) * 0.0012 * speedFactor;
+    //     ball.vv = (to === "bot" ? 0.0011 : -0.0011) * speedFactor;
+    //     ball.z = 0.2;
+    //     ball.vz = 0;
+    //
+    //     // Reset player and bot to default positions
+    //     player.u = 0.5;
+    //     player.v = 0.72;
+    //     bot.u = 0.5;
+    //     bot.v = -0.40;
+    // }
+
+    function resetBall(to) {
+        // Use the serveTurn instead of the 'to' parameter
+        if (serveTurn === "bot") {
             ball.u = bot.u;
             ball.v = bot.v + 0.06;
         } else {
@@ -548,7 +587,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Reset ball physics
         ball.vu = (Math.random() - 0.5) * 0.0012 * speedFactor;
-        ball.vv = (to === "bot" ? 0.0011 : -0.0011) * speedFactor;
+
+        // Set vertical direction based on who's serving
+        if (serveTurn === "bot") {
+            ball.vv = 0.0011 * speedFactor; // Bot serves downward
+        } else {
+            ball.vv = -0.0011 * speedFactor; // Player serves upward
+        }
+
         ball.z = 0.2;
         ball.vz = 0;
 
@@ -662,6 +708,8 @@ document.addEventListener("DOMContentLoaded", () => {
 //         requestAnimationFrame(loop);
 //     }
     // === Enhanced Main Game Loop ===
+
+// Modify the scoring logic to alternate serves
     function loop(now) {
         const dt = Math.min(40, now - last);
         last = now;
@@ -701,7 +749,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Player hit with enhanced physics
         if (hitPaddle(player) && ball.vv > 0) {
-            soundHandler.play("hitPaddle");
+            window.soundHandler.play("hitPaddle");
             ball.vv = -Math.abs(ball.vv) - 0.00005;
             ball.vu += (ball.u - player.u) * 0.02 + spinBoost;
             ball.v = player.v - 0.03;
@@ -710,7 +758,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Bot hit
         if (hitPaddle(bot) && ball.vv < 0) {
-            soundHandler.play("hitPaddle");
+            window.soundHandler.play("hitPaddle");
             ball.vv = Math.abs(ball.vv) + 0.00005;
             ball.vu += (ball.u - bot.u) * 0.015;
             ball.v = bot.v + 0.03;
@@ -720,13 +768,15 @@ document.addEventListener("DOMContentLoaded", () => {
         // Scoring
         if (ball.v < bot.v - 0.08) {
             playerScore++;
-            soundHandler.play("score");
-            resetBall("bot");
+            // soundHandler.play("score");
+            serveTurn = "bot"; // Bot serves next
+            resetBall();
             updateProgressUI();
         } else if (ball.v > player.v + 0.08) {
             botScore++;
-            soundHandler.play("score");
-            resetBall("player");
+            // soundHandler.play("score");
+            serveTurn = "player"; // Player serves next
+            resetBall();
             updateProgressUI();
         }
 
@@ -912,12 +962,12 @@ document.addEventListener("DOMContentLoaded", () => {
 // XP thresholds for each level
     const xpNeeded = [0, 100, 250, 500, 1000]; // expand as needed
 
-    const xpEl = document.getElementById("xp-display");
-    const coinsEl = document.getElementById("coins-display");
+    // const xpEl = document.getElementById("xp-display");
+    // const coinsEl = document.getElementById("coins-display");
 
     function updateProgressUI() {
-        xpEl.textContent = `XP: ${playerXP} | Lvl: ${playerLevel}`;
-        coinsEl.textContent = `💰 ${playerCoins}`;
+        // xpEl.textContent = `⭐: ${playerXP} | 🛡️Lvl: ${playerLevel}`;
+        // coinsEl.textContent = `🟡 ${playerCoins}`;
         scoreEl.textContent = `Player: ${playerScore} | Bot: ${botScore}`;
 
         // Show the current category name and level
@@ -967,24 +1017,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function initProgress() {
-        // First try to get category/level from URL
         const urlParams = new URLSearchParams(window.location.search);
         const urlCategory = parseInt(urlParams.get('category'));
         const urlLevel = parseInt(urlParams.get('level'));
-
         if (urlCategory && urlLevel) {
             currentCategory = urlCategory;
             currentLevel = urlLevel;
         } else {
-            // Fall back to saved progress
-            await loadProgress();
+            // Fetch from backend
+            const username = localStorage.getItem('username') || 'guest';
+            const response = await fetch(`/api/progress/${username}`);
+            if (response.ok) {
+                const data = await response.json();
+                playerXP = data.xp || 0;
+                playerLevel = data.level || 1;
+                playerCoins = data.coins || 0;
+                currentCategory = data.category || 1;
+                currentLevel = data.stage || 1;
+            }
         }
-
         updateProgressUI();
-
-        // Set difficulty based on category/level
-        // setDifficulty();
     }
+
 
     // function setDifficulty() {
     //     // Set bot difficulty based on category and level
@@ -1108,18 +1162,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    // Modify the startLevel function to ensure player serves first
     function startLevel() {
-        document.getElementById("progressBar").classList.remove("active");
         scoreEl.classList.add("active");
+        homeEl.classList.add("active");
 
-        // playerXP = 0;
-        // playerCoins = 0;
+        // Player always serves first at the start of a level
+        serveTurn = "player";
+
         playerScore = 0;
         botScore = 0;
         updateProgressUI();
 
         running = true;
-        resetBall("bot");
+        resetBall(); // This will now use serveTurn
         last = performance.now();
 
         matchStartTime = performance.now();
@@ -1131,8 +1187,9 @@ document.addEventListener("DOMContentLoaded", () => {
     function endLevel() {
         running = false;
         // if (levelTimerId) clearInterval(levelTimerId);
-        scoreEl.classList.remove("active");
-        document.getElementById("progressBar").classList.add("active");
+        // scoreEl.classList.remove("active");
+        // homeEl.classList.remove("active");
+        // document.getElementById("progressBar").classList.add("active");
 
         const win = playerScore > botScore;
         recordMatchCompletion(win);
@@ -1204,17 +1261,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function saveProgressToServer(category, level, globalLevel) {
         try {
-            await fetch("/api/progress", {
+            const username = localStorage.getItem('username') || 'guest';
+            const response = await fetch("/api/progress", {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                    username,
                     xp: playerXP,
                     level: playerLevel,
                     coins: playerCoins,
-                    category: category,
-                    stage: globalLevel // This should be the global level, not the category level
+                    category,
+                    stage: level, // or globalLevel, depending on your logic
                 })
             });
+            if (!response.ok) throw new Error("Failed to save progress");
+            const data = await response.json();
+            console.log("Progress saved:", data);
         } catch (err) {
             console.error("❌ Failed to save progress", err);
             // Fallback to localStorage
@@ -1222,11 +1284,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 xp: playerXP,
                 level: playerLevel,
                 coins: playerCoins,
-                category: category,
-                stage: globalLevel
+                category,
+                stage: level
             }));
         }
     }
+
     //
     // const unlocks = {
     //     1: {table: "classic", paddle: "default", ball: "white"},
@@ -1252,7 +1315,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sessionStorage.setItem("xp", playerXP);
     sessionStorage.getItem("xp");
 
-    resetBall("bot");
+    resetBall();
     initProgress();
 
 

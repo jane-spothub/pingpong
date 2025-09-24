@@ -24,7 +24,7 @@ const categoryIcons = [
     "fa-medal"
 ];
 
-const LEVELS_PER_CATEGORY = 30;
+const LEVELS_PER_CATEGORY = 15;
 let userProgress = {
     xp: 0,
     level: 1,

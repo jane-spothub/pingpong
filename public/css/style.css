@@ -228,41 +228,155 @@ canvas{
 #progressBar {
     display: none; /* hidden by default */
 }
+
+
+#progressBar.active{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 8px 0;
+    border-radius: 5px;
+    background: linear-gradient(90deg,  #6a11cb, #2575fc);
+    background-size: 300% 300%;
+    animation: shine 6s linear infinite;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    margin-bottom: 15px;
+    position: absolute;
+    /*border:1px solid white;*/
+    top:0;
+}
+
+#progressBar span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    transition: transform 0.2s;
+}
+
+#progressBar span:hover {
+    transform: scale(1.1);
+}
+
+.progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 8px 0;
+    border-radius: 15px;
+    /*background: linear-gradient(90deg, #4a0262, #b28aff, #4a0262);*/
+    /*background-size: 300% 300%;*/
+    /*animation: shine 6s linear infinite;*/
+    font-size: 16px;
+    font-weight: bold;
+    /*box-shadow: 0 4px 12px rgba(0,0,0,0.4);*/
+    margin-bottom: 15px;
+    position: absolute;
+    /*border:1px solid white;*/
+    top:0;
+}
+
+.progress-top span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    transition: transform 0.2s;
+}
+
+.progress-top span:hover {
+    transform: scale(1.1);
+}
+
+.play-active-bar{
+    display: none;
+}
+
+.play-active-bar.active{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 5px 2px;
+    border-radius: 10px;
+    /*background: linear-gradient(90deg,  #6a11cb, #2575fc);*/
+    /*background-size: 300% 300%;*/
+    /*animation: shine 6s linear infinite;*/
+    font-size: 18px;
+    font-weight: bold;
+    /*box-shadow: 0 4px 12px rgba(0,0,0,0.4);*/
+    margin-bottom: 15px;
+    position: absolute;
+    /*border:1px solid white;*/
+    top:0;
+}
+
 #score-display{
     display: none;
 }
 
-#progressBar.active, #score-display.active{
-    position: absolute;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
+#score-display.active{
     display: flex;
-    width:auto;
-    gap: 30px;
-    font-size: 16px;
+    align-items: center;
+    gap: 15px;
+    font-size: 18px;
     font-weight: bold;
     color: #fff;
-    background: rgba(0,0,0,0.4);
-    padding: 8px 20px;
-    border-radius: 12px;
-    align-items: center;
+    padding: 10px 12px;
+    border-radius: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    letter-spacing: 1px;
 }
-#progressHomeBar {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    width:90%;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 16px;
-    font-weight: bold;
-    color: #fff;
-    background: rgba(0,0,0,0.4);
-    padding: 12px 10px;
+
+/* Player side */
+#score-display .player, #home-Btn {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    padding: 6px 14px;
     border-radius: 12px;
+    /*box-shadow: 0 0 10px rgba(255,75,43,0.8);*/
+    color: #fff;
+}
+
+/* Bot side */
+#score-display .bot , #score-display{
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    padding: 6px 14px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,114,255,0.8);
+    color: #fff;
+}
+
+/* XP Gems */
+#xp-display {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    box-shadow: 0 0 10px rgba(106,17,203,0.7);
+}
+
+/* Coins */
+#coins-display {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.8);
+    color: #222;
+    font-weight: 700;
+}
+
+/* Glow animation for bar */
+@keyframes shine {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 #endOverlay {
@@ -271,7 +385,7 @@ canvas{
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(10, 15, 30, 0.75); /* dark blur */
+    background: rgba(10, 15, 30, 0.51); /* dark blur */
     z-index: 100;
     opacity: 0;
     pointer-events: none;
@@ -285,7 +399,7 @@ canvas{
 
 /* Card style */
 .overlay-card {
-    background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08));
+    background: linear-gradient(145deg, rgba(58, 54, 54, 0.71), rgba(255, 255, 255, 0.23));
     backdrop-filter: blur(18px);
     border-radius: 28px;
     padding: 32px 26px;

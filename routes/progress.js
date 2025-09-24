@@ -62,17 +62,21 @@ router.get("/progress/:username", (req, res) => {
 });
 
 // POST save progress (update xp/level/coins)
+// POST save progress (update xp/level/coins/category/stage)
 router.post("/progress", (req, res) => {
-    const { username, xp, level, coins } = req.body;
+    const { username, xp, level, coins, category, stage } = req.body;
     if (!username) return res.status(400).json({ success: false, message: "No username" });
 
     const user = getOrCreateUser(username);
     if (xp !== undefined) user.xp = xp;
     if (level !== undefined) user.level = level;
     if (coins !== undefined) user.coins = coins;
+    if (category !== undefined) user.category = category;
+    if (stage !== undefined) user.stage = stage;
 
     res.json({ success: true, progress: user });
 });
+
 
 //
 // ─── DAILY REWARDS ROUTES ──────────────────────────────────────────────────────

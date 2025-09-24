@@ -4,6 +4,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const loader = document.getElementById("loader");
     const mainContent = document.getElementById("main-content");
 
+    // ✅ Add a Continue button
+    const continueBtn = document.createElement("button");
+    continueBtn.textContent = "Let’s Go!";
+    continueBtn.id = "continueBtn";
+    continueBtn.style.display = "none"; // hidden until loaded
+    continueBtn.style.marginTop = "20px";
+    continueBtn.style.padding = "10px 20px";
+    continueBtn.style.fontSize = "1.2rem";
+    continueBtn.style.cursor = "pointer";
+    continueBtn.style.borderRadius = "10px";
+    continueBtn.style.border = "none";
+    continueBtn.style.background = "orange"
+    document.querySelector(".loader-content").appendChild(continueBtn);
+
     // 🔹 Assets to preload
     const assets = [
         "assets/img/player-paddle.png",
@@ -25,14 +39,13 @@ document.addEventListener("DOMContentLoaded", () => {
         progressText.textContent = "Loading " + percent + "%";
 
         if (loaded === assets.length) {
-            loader.classList.add("fade-out");
-            setTimeout(() => {
-                loader.style.display = "none";
-                mainContent.style.display = "block";
-            }, 800);
+            // 🔹 Show the Continue button instead of auto-fading
+            continueBtn.style.display = "inline-block";
+            progressText.textContent = "Loading complete!";
         }
     }
 
+    // Preload images
     function preloadImage(src) {
         return new Promise((resolve) => {
             const img = new Image();
@@ -42,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Preload audio
     function preloadAudio(src) {
         return new Promise((resolve) => {
             const audio = new Audio();
@@ -58,4 +72,18 @@ document.addEventListener("DOMContentLoaded", () => {
             src.endsWith(".png") ? preloadImage(src) : preloadAudio(src)
         )
     ).then(() => console.log("✅ All assets preloaded"));
+
+    // 🔹 Continue button click
+    continueBtn.addEventListener("click", () => {
+        loader.classList.add("fade-out");
+        setTimeout(() => {
+            loader.style.display = "none";
+            mainContent.style.display = "block";
+        }, 800);
+
+        // 🎵 Start background music here
+        if (window.soundHandler) {
+            window.soundHandler.playBackground();
+        }
+    });
 });

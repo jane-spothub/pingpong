@@ -1,8 +1,17 @@
+import { SoundHandler } from "./soundHandler.js";
+if (!window.soundHandler) {
+    window.soundHandler = new SoundHandler();
+}
+// Try to autoplay background music
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("gameHomePaddle");
     const ctx = canvas.getContext("2d");
-
-    function resizeCanvas() {
+    // 🎵 Create sound handler (make global if needed across pages)
+    try {
+        window.soundHandler.playBackground();
+    } catch (e) {
+        console.warn("Background sound error:", e);
+    }    function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     }
