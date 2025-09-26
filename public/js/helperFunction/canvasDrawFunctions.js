@@ -193,7 +193,7 @@ export function drawBall() {
 
 
 export function drawPaddle(ctx, x, y, radius, color, isBot = false, useRound = true) {
-    const paddleSize = radius * 2.4;
+    const paddleSize = radius * 3.4;
     const img = isBot ? BotImg : PlayerImg;
 
     // --- Shadow ---
