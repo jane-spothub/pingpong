@@ -22,66 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const centerY = () => canvas.height / 2;
 
     let angle = 0;
+    const particles = [];
     let ballAngle = 0;
     let ballRadius = 20;
-
-    // ------------------ Glow Particles ------------------
-    const particles = [];
-    const particleCount = 25; // adjust for density
-
-    // class Particle {
-    //     constructor() {
-    //         this.reset();
-    //     }
-    //     reset() {
-    //         this.x = Math.random() * canvas.width;
-    //         this.y = Math.random() * canvas.height;
-    //         this.radius = 10 + Math.random() * 20;
-    //         this.alpha = 0;
-    //         this.fadeIn = true;
-    //         this.speedX = (Math.random() - 0.5) * 0.3;
-    //         this.speedY = (Math.random() - 0.5) * 0.3;
-    //         this.color = `hsl(${Math.random() * 360}, 80%, 60%)`; // colorful glow
-    //     }
-    //     update() {
-    //         this.x += this.speedX;
-    //         this.y += this.speedY;
-    //
-    //         // Fade in/out
-    //         if (this.fadeIn) {
-    //             this.alpha += 0.01;
-    //             if (this.alpha >= 0.7) this.fadeIn = false;
-    //         } else {
-    //             this.alpha -= 0.005;
-    //             if (this.alpha <= 0) this.reset();
-    //         }
-    //
-    //         // Wrap around edges
-    //         if (this.x < -50 || this.x > canvas.width + 50 ||
-    //             this.y < -50 || this.y > canvas.height + 50) {
-    //             this.reset();
-    //         }
-    //     }
-    //     draw() {
-    //         const grad = ctx.createRadialGradient(
-    //             this.x, this.y, 0,
-    //             this.x, this.y, this.radius
-    //         );
-    //         grad.addColorStop(0, this.color);
-    //         grad.addColorStop(1, "transparent");
-    //
-    //         ctx.globalAlpha = this.alpha;
-    //         ctx.fillStyle = grad;
-    //         ctx.beginPath();
-    //         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    //         ctx.fill();
-    //         ctx.globalAlpha = 1;
-    //     }
-    // }
-    //
-    // for (let i = 0; i < particleCount; i++) {
-    //     particles.push(new Particle());
-    // }
+    const trail = []; // store old ball positions
+    const maxTrail = 15; // how many fading circles to keep
 
     // ------------------ Table ------------------
     function drawTable() {
@@ -152,17 +97,13 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.stroke();
         }
     }
-
-
-
-
 // Paddle repositioned below table
     function drawPaddle(rotation) {
         const cx = centerX();
         const cy = centerY();
 
         ctx.save();
-        ctx.translate(cx, cy + canvas.height * 0.25); // move below table edge
+        ctx.translate(cx, cy + canvas.height * 0.050); // move below table edge
         ctx.rotate(rotation);
 
         const radius = 70;
@@ -182,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+
     // ------------------ Ball ------------------
     function drawBall() {
         const cx = centerX();
@@ -190,6 +132,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const ballX = cx + Math.sin(ballAngle) * 150;
         const ballY = cy - 50 + Math.cos(ballAngle) * 50;
 
+        // Save position to trail
+        trail.push({ x: ballX, y: ballY });
+        if (trail.length > maxTrail) trail.shift();
+
+        // --- Draw Trail ---
+        trail.forEach((pos, i) => {
+            const alpha = i / trail.length; // fade out
+            ctx.fillStyle = `rgba(255,255,255,${alpha * 0.6})`;
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, ballRadius * (0.6 * alpha), 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // --- Draw Ball ---
         const grad = ctx.createRadialGradient(
             ballX - 10, ballY - 10, 5,
             ballX, ballY, ballRadius
@@ -207,6 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.stroke();
     }
 
+
     // ------------------ Animate ------------------
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -221,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
         drawTable();
 
         // Draw paddle + ball
-        drawPaddle(Math.sin(angle) * 0.4);
+        // drawPaddle(Math.sin(angle) * 0.4);
         drawBall();
 
         angle += 0.02;

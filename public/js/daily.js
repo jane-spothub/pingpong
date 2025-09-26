@@ -9,10 +9,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector(".daily-settings-overlay").classList.add("hidden");
     });
 
-    document.getElementById("back-daily-btn").addEventListener("click", () => {
-        // document.querySelector(".daily-settings-overlay").classList.remove("active");
-        document.querySelector(".daily-settings-overlay").classList.add("hidden");
-    });
 
     const claimButton = document.getElementById('claimButton');
     const notification = document.getElementById('rewardNotification');
@@ -50,7 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch(`/api/progress/${username}`)
         .then(res => res.json())
         .then(user => {
-            const nextDay = (user.daily.streak % 7) + 1;
+            const userM = data;
+
+            const nextDay = (userM.daily.streak % 7) + 1;
+
+            // const nextDay = (user.daily.streak % 7) + 1;
 
             // Update streak text
             streakCount.textContent = `${user.daily.streak} days`;

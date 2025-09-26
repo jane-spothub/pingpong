@@ -8,14 +8,14 @@
 </head>
 <body class="game-body">
 <div id="gameContainer">
-<!--    <div id="progressBar">-->
-<!--    </div>-->
+    <!--    <div id="progressBar">-->
+    <!--    </div>-->
 
     <div class="play-active-bar">
-        <div id="home-Btn">Home</div>
+<!--        <div id="home-Btn">Home</div>-->
         <div id="score-display">Player: 0 | Bot: 0</div>
-<!--        <span id="xp-display">⭐: 0 | 🛡️Lvl: 1</span>-->
-<!--        <span id="coins-display">🟡 0</span>-->
+                <span id="xp-display"> </span>
+        <!--        <span id="coins-display">🟡 0</span>-->
     </div>
 
 
@@ -39,19 +39,19 @@
     <div class="overlay-card">
         <div class="level-category">
             <div class="reward level">
-                Level <span id="levelReached">1</span>
+                 <span id="levelReached"></span>
             </div>
         </div>
-        <h2 id="endTitle">Level Failed!</h2>
-        <div id="endEmoji">😟</div>
+        <h2 id="endTitle"></h2>
+        <div id="endEmoji"></div>
         <div class="reward-row">
             <div class="reward">
-                <span class="icon">⭐</span>
-                <span id="earnedXP">0</span>
+                <span class="icon"></span>
+                <span id="earnedXP"></span>
             </div>
             <div class="reward">
-                <span class="icon">🟡</span>
-                <span id="earnedCoins">0</span>
+                <span class="icon"></span>
+                <span id="earnedCoins"></span>
             </div>
 
         </div>
@@ -60,8 +60,10 @@
         <div class="overlay-buttons">
             <div id="reviveBtn" class="btn big">Revive</div>
             <div id="nextBtn" class="btn big">Next Level</div>
-            <div id="homeBtn" class="btn">Home</div>
+            <div id="startBtn" class="btn big hidden">Start Game</div>
+            <div id="exitBtn" class="btn hidden">Exit</div>
         </div>
+
     </div>
 </div>
 

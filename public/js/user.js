@@ -1,36 +1,48 @@
+
 document.addEventListener("DOMContentLoaded", () => {
-    const overlay = document.getElementById("usernameOverlay");
+    const overlay = document.querySelector(".username-overlay");
     const input = document.getElementById("usernameInput");
     const button = document.getElementById("usernameSubmit");
+    const gameContainer = document.getElementById("gameContainer");
 
-    // If already saved, skip overlay
-    let savedUsername = localStorage.getItem("username");
+    const savedUsername = localStorage.getItem("username");
+
     if (savedUsername) {
-        overlay.style.display = "none";
-        document.getElementById("gameContainer").style.display = "block";
-
+        overlay.classList.add("hidden");
+        gameContainer.style.display = "block";
+    } else {
+            overlay.classList.remove("hidden");
+            gameContainer.style.display = "none";
     }
 
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
         const username = input.value.trim();
         if (!username) {
             alert("Please enter a username!");
             return;
         }
 
-        // Save locally (so user won’t have to re-enter each time)
         localStorage.setItem("username", username);
 
-        // Later: send to backend to check/create user record
-        fetch("/progress", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username })
-        });
+        try {
+            const response = await fetch(`/api/progress/${username}`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username})
+            });
+            const result = await response.json();
+            console.log("Saved progress:", result);
+        } catch (err) {
+            console.error("❌ Failed to save progress:", err);
+        }
 
-        // Hide overlay
-        overlay.style.display = "none";
-        document.getElementById("gameContainer").style.display = "block";
+        overlay.classList.add("hidden");
+        overlay.classList.remove("active");
+        gameContainer.style.display = "block";
 
+        if (window.soundHandler) {
+            window.soundHandler.playBackground();
+        }
     });
+
 });

@@ -4,10 +4,15 @@ async function fetchProgress() {
     try {
         const res = await fetch(`/api/progress/${username}`);
         const data = await res.json();
+        const progress = data.progress; // 🔹 fix
+
+        document.getElementById("xp-display").textContent = `⭐: ${progress.xp} | 🛡️Lvl: ${progress.level}`;
+        document.getElementById("coins-display").textContent = `🟡 ${progress.coins}`;
+
 
         // update UI
-        document.getElementById("xp-display").textContent = `⭐: ${data.xp} | 🛡️Lvl: ${data.level}`;
-        document.getElementById("coins-display").textContent = `🟡 ${data.coins}`;
+        // document.getElementById("xp-display").textContent = `⭐: ${data.xp} | 🛡️Lvl: ${data.level}`;
+        // document.getElementById("coins-display").textContent = `🟡 ${data.coins}`;
     } catch (err) {
         console.error("❌ Failed to fetch progress:", err);
     }
